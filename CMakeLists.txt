@@ -7,6 +7,7 @@ project (prima Fortran)
 option (BUILD_SHARED_LIBS "shared/static" ON)
 
 include (GNUInstallDirs)
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} --cpp")
 
 # the compiler enables an executable stack because of nested functions and this is fine
 if (CMAKE_Fortran_COMPILER_ID MATCHES "GNU" AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.18)
