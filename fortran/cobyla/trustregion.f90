@@ -349,7 +349,7 @@ do iter = 1, maxiter
             ! A(:, IACT(1:NACT)) is the UNUPDATED version before QRADD (Z(:, 1:NACT) remains the
             ! same before and after QRADD). Therefore, if we supply ZDOTA to LSQR (as Rdiag) as
             ! Powell did, we should use the UNUPDATED version, namely ZDASAV.
-            vmultd(1:nact) = lsqr(A(:, iact(1:nact)), A(:, iact(icon)), z(:, 1:nact), zdasav(1:nact))
+            ! vmultd(1:nact) = lsqr(A(:, iact(1:nact)), A(:, iact(icon)), z(:, 1:nact), zdasav(1:nact))
             if (.not. any(vmultd(1:nact) > 0 .and. iact(1:nact) <= m)) then
                 ! N.B.: This can be triggered by NACT == 0 (among other possibilities)! This is
                 ! important, because NACT will be used as an index in the sequel.
@@ -388,7 +388,7 @@ do iter = 1, maxiter
                 ! We must exit, as NACT-1 is used as an index below. Powell's code does not have this.
                 exit
             end if
-            call qrexc(A(:, iact(1:nact)), z, zdota(1:nact), nact - 1_IK)
+            ! call qrexc(A(:, iact(1:nact)), z, zdota(1:nact), nact - 1_IK)
             ! Indeed, it suffices to pass Z(:, 1:NACT) to QREXC as follows.
             ! !call qrexc(A(:, iact(1:nact)), z(:, 1:nact), zdota(1:nact), nact - 1_IK)
             iact([nact - 1_IK, nact]) = iact([nact, nact - 1_IK])
@@ -421,7 +421,7 @@ do iter = 1, maxiter
         ! reordering IACT(ICONT:NACT) into [IACT(ICON+1:NACT), IACT(ICON)] by pairwise exchanges
         ! and then reduce NACT to NACT - 1. In theory, ICON > 0.
         call validate(icon > 0, 'ICON > 0', srname)
-        call qrexc(A(:, iact(1:nact)), z, zdota(1:nact), icon)  ! QREXC does nothing if ICON==NACT.
+        ! call qrexc(A(:, iact(1:nact)), z, zdota(1:nact), icon)  ! QREXC does nothing if ICON==NACT.
         ! Indeed, it suffices to pass Z(:, 1:NACT) to QREXC as follows.
         ! !call qrexc(A(:, iact(1:nact)), z(:, 1:nact), zdota(1:nact), icon)
         iact(icon:nact) = [iact(icon + 1:nact), iact(icon)]
@@ -515,7 +515,7 @@ do iter = 1, maxiter
     dnew = d + step * sdirn
     if (stage == 1) then
         !cvold = cviol
-        cviol = maximum([ZERO, matprod(dnew, A(:, iact(1:nact))) - b(iact(1:nact))])
+        ! cviol = maximum([ZERO, matprod(dnew, A(:, iact(1:nact))) - b(iact(1:nact))])
         ! N.B.: CVIOL will be used when calculating VMULTD(NACT+1 : MCON).
     end if
 
@@ -526,13 +526,13 @@ do iter = 1, maxiter
     ! Set VMULTD to the VMULTC vector that would occur if D became DNEW. A device is included to
     ! force VMULTD(K)=ZERO if deviations from this value can be attributed to computer rounding
     ! errors. First calculate the new Lagrange multipliers.
-    vmultd(1:nact) = -lsqr(A(:, iact(1:nact)), dnew, z(:, 1:nact), zdota(1:nact))
+    ! vmultd(1:nact) = -lsqr(A(:, iact(1:nact)), dnew, z(:, 1:nact), zdota(1:nact))
     if (stage == 2) then
         vmultd(nact) = max(ZERO, vmultd(nact))  ! This seems never activated.
     end if
     ! Complete VMULTD by finding the new constraint residuals. (Powell wrote "Complete VMULTC ...")
-    cvshift = cviol - (matprod(dnew, A(:, iact)) - b(iact))  ! Only CVSHIFT(nact+1:mcon) is needed.
-    cvsabs = matprod(abs(dnew), abs(A(:, iact))) + abs(b(iact)) + cviol
+    ! cvshift = cviol - (matprod(dnew, A(:, iact)) - b(iact))  ! Only CVSHIFT(nact+1:mcon) is needed.
+    ! cvsabs = matprod(abs(dnew), abs(A(:, iact))) + abs(b(iact)) + cviol
     cvshift(trueloc(isminor(cvshift, cvsabs))) = ZERO
     !!MATLAB: cvshift(isminor(cvshift, cvsabs)) = 0;
     vmultd(nact + 1:mcon) = cvshift(nact + 1:mcon)

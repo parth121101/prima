@@ -361,7 +361,7 @@ if (.not. ximproved) then
 end if
 
 mask = (abs(rescon) < dnorm + delta)
-ax(trueloc(mask)) = matprod(xopt, amat(:, trueloc(mask)))
+! ax(trueloc(mask)) = matprod(xopt, amat(:, trueloc(mask)))
 where (mask)
     rescon = max(b - ax, ZERO)
 elsewhere

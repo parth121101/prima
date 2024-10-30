@@ -407,7 +407,7 @@ rstat(trueloc(abs(rescon) >= delbar)) = -1  ! Irrelevant
 rstat(iact(1:nact)) = 0  ! Active
 
 ! Set FEASIBLE for the calculated S.
-cstrv = maximum([ZERO, matprod(s, amat(:, trueloc(rstat >= 0))) - rescon(trueloc(rstat >= 0))])
+! cstrv = maximum([ZERO, matprod(s, amat(:, trueloc(rstat >= 0))) - rescon(trueloc(rstat >= 0))])
 feasible = (cstrv <= 0)
 
 ! If NACT <= 0 or NACT >= N, the calculation has finished. Otherwise, define PGSTP by maximizing
@@ -429,13 +429,13 @@ if (nact > 0 .and. gnorm > EPS .and. is_finite(gnorm)) then
     ! Decide whether to replace S with PGSTP and set FEASIBLE accordingly. CSTRV is the constraint
     ! violation of XOPT+PGSTP. Note that we only need to check the constraints that are inactive and
     ! relevant, as the value of the active constraints is not changed by moving along PGSTP.
-    cstrv = maximum([ZERO, matprod(pgstp, amat(:, trueloc(rstat == 1))) - rescon(trueloc(rstat == 1))])
+    ! cstrv = maximum([ZERO, matprod(pgstp, amat(:, trueloc(rstat == 1))) - rescon(trueloc(rstat == 1))])
     ! The purpose of CVTOL below is to provide a check on feasibility that includes a tolerance for
     ! contributions from computer rounding errors.
     ! Powell's code is as follows. Note that MATPROD(PGSTP, AMAT(:, IACT(1:NACT))) is 0 in theory.
     ! !cvtol = min(0.01_RP * norm(pgstp), TEN * norm(matprod(pgstp, amat(:, iact(1:nact))), 'inf'))
     ! The following code works essentially the same as Powell's code.
-    cvtol = max(EPS * norm(pgstp), TEN * norm(matprod(pgstp, amat(:, iact(1:nact))), 'inf'))
+    ! cvtol = max(EPS * norm(pgstp), TEN * norm(matprod(pgstp, amat(:, iact(1:nact))), 'inf'))
     take_pgstp = .false.
     if (cstrv <= cvtol) then
         den = calden(kopt, bmat, pgstp, xpt, zmat, idz)  ! Indeed, only DEN(KNEW) is needed.
@@ -453,7 +453,7 @@ if (sum(abs(s)) <= 0 .or. .not. is_finite(sum(abs(s)))) then
     s = xpt(:, knew) - xopt
     scaling = delbar / norm(s)
     s = max(0.6_RP * scaling, min(HALF, scaling)) * s  ! 0.6: ensure |D| > DELBAR/2
-    cstrv = maximum([ZERO, matprod(s, amat(:, trueloc(rstat >= 0))) - rescon(trueloc(rstat >= 0))])
+    ! cstrv = maximum([ZERO, matprod(s, amat(:, trueloc(rstat >= 0))) - rescon(trueloc(rstat >= 0))])
     feasible = (cstrv <= 0)
 end if
 

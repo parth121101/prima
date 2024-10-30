@@ -295,9 +295,9 @@ do iter = 1, maxiter
     ! The following condition works essentially the same as Powell's. However, it ensures that
     ! VIOLMX > EPS * DNORM when the EXIT is not triggered, which implies that AMAT(:, L) is not in
     ! the range of QFAC(:, 1:NACT).
-    if (all(.not. mask) .or. violmx <= max(EPS * dnorm, TEN * norm(apsd(iact(1:nact)), 'inf'))) then
-        exit
-    end if
+    ! if (all(.not. mask) .or. violmx <= max(EPS * dnorm, TEN * norm(apsd(iact(1:nact)), 'inf'))) then
+    !     exit
+    ! end if
 
     ! Add constraint L to the active set. ADDACT sets NACT = NACT + 1 and VLAM(NACT) = 0.
     call addact(l, amat(:, l), iact, nact, qfac, resact, resnew, rfac, vlam)
