@@ -98,7 +98,7 @@ add_custom_target (tests)
 add_dependencies(tests examples)
 add_subdirectory(fortran)
 
-option (PRIMA_ENABLE_C "C binding" ON)
+# option (PRIMA_ENABLE_C "C binding" ON)
 
 if (PRIMA_ENABLE_C)
   enable_language(C)
