@@ -56,26 +56,26 @@ end module calfun_mod
 !---------------------------------------- THE MAIN PROGRAM ----------------------------------------!
 program uobyqa_exmp
 
-! The following line makes the solver available.
-use uobyqa_mod, only : uobyqa
+! ! The following line makes the solver available.
+! use uobyqa_mod, only : uobyqa
 
-! The following line specifies which module provides CALFUN.
-use calfun_mod, only : RP, IK, calfun
+! ! The following line specifies which module provides CALFUN.
+! use calfun_mod, only : RP, IK, calfun
 
-implicit none
+! implicit none
 
-integer, parameter :: n = 6
-integer :: i, nf, info
-real(RP) :: f, x(n)
+! integer, parameter :: n = 6
+! integer :: i, nf, info
+! real(RP) :: f, x(n)
 
-! The following lines illustrates how to call the solver to solve the Chebyquad problem.
-x = [(real(i, RP) / real(n + 1, RP), i=1, n)]  ! Starting point
-call uobyqa(calfun, x, f)  ! This call will not print anything.
+! ! The following lines illustrates how to call the solver to solve the Chebyquad problem.
+! x = [(real(i, RP) / real(n + 1, RP), i=1, n)]  ! Starting point
+! call uobyqa(calfun, x, f)  ! This call will not print anything.
 
-! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and IPRINT,
-! which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will take their
-! default values coded in the solver.
-x = [(real(i, RP) / real(n + 1, RP), i=1, n)]  ! Starting point
-call uobyqa(calfun, x, f, rhobeg=0.2_RP * x(1), iprint=1_IK, nf=nf, info=info)
+! ! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and IPRINT,
+! ! which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will take their
+! ! default values coded in the solver.
+! x = [(real(i, RP) / real(n + 1, RP), i=1, n)]  ! Starting point
+! call uobyqa(calfun, x, f, rhobeg=0.2_RP * x(1), iprint=1_IK, nf=nf, info=info)
 
 end program uobyqa_exmp

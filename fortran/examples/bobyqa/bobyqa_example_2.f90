@@ -56,35 +56,35 @@ end module calfun_mod
 !---------------------------------------- THE MAIN PROGRAM ----------------------------------------!
 program bobyqa_exmp
 
-! The following line makes the solver available.
-use bobyqa_mod, only : bobyqa
+! ! The following line makes the solver available.
+! use bobyqa_mod, only : bobyqa
 
-! The following line specifies which module provides CALFUN.
-use calfun_mod, only : RP, IK, calfun
+! ! The following line specifies which module provides CALFUN.
+! use calfun_mod, only : RP, IK, calfun
 
-implicit none
+! implicit none
 
-integer, parameter :: n = 20
-integer :: i, nf, info
-real(RP) :: f, x(n), x0(n), lb(n), ub(n), angle
+! integer, parameter :: n = 20
+! integer :: i, nf, info
+! real(RP) :: f, x(n), x0(n), lb(n), ub(n), angle
 
-! Define the starting point.
-do i = 1, n / 2
-    angle = real(i, RP) * 8.0_RP * atan(1.0_RP) / real(n / 2, RP)
-    x0(2 * i - 1) = cos(angle)
-    x0(2 * i) = sin(angle)
-end do
-lb = -1.0_RP
-ub = 1.0_RP
+! ! Define the starting point.
+! do i = 1, n / 2
+!     angle = real(i, RP) * 8.0_RP * atan(1.0_RP) / real(n / 2, RP)
+!     x0(2 * i - 1) = cos(angle)
+!     x0(2 * i) = sin(angle)
+! end do
+! lb = -1.0_RP
+! ub = 1.0_RP
 
-! The following lines illustrates how to call the solver.
-x = x0
-call bobyqa(calfun, x, f, lb, ub)  ! This call will not print anything.
+! ! The following lines illustrates how to call the solver.
+! x = x0
+! call bobyqa(calfun, x, f, lb, ub)  ! This call will not print anything.
 
-! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and
-! IPRINT, which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will
-! take their default values coded in the solver.
-x = x0
-call bobyqa(calfun, x, f, lb, ub, rhobeg=0.1_RP, iprint=1_IK, nf=nf, info=info)
+! ! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and
+! ! IPRINT, which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will
+! ! take their default values coded in the solver.
+! x = x0
+! call bobyqa(calfun, x, f, lb, ub, rhobeg=0.1_RP, iprint=1_IK, nf=nf, info=info)
 
 end program bobyqa_exmp

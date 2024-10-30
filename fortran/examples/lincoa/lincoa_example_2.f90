@@ -117,10 +117,10 @@ end module tetrahedron_mod
 program lincoa_exmp
 
 ! The following line makes the solver available.
-use lincoa_mod, only : lincoa
+! use lincoa_mod, only : lincoa
 
 ! The following line specifies which module provides CALFUN.
-use tetrahedron_mod, only : RP, IK, calfun, setup
+use tetrahedron_mod, only : RP!, IK, calfun, setup
 
 implicit none
 
@@ -128,17 +128,17 @@ integer, parameter :: n = 12, np = 50
 integer :: nf, info
 real(RP) :: f, cstrv, x(n), x0(n), Aineq(4 * np, n), bineq(4 * np)
 
-! Set up X0 (starting point), Aineq, and bineq.
-call setup(x0, Aineq, bineq)
+! ! Set up X0 (starting point), Aineq, and bineq.
+! call setup(x0, Aineq, bineq)
 
-! The following lines illustrates how to call the solver.
-x = x0
-call lincoa(calfun, x, f, cstrv, Aineq, bineq)  ! This call will not print anything.
+! ! The following lines illustrates how to call the solver.
+! x = x0
+! call lincoa(calfun, x, f, cstrv, Aineq, bineq)  ! This call will not print anything.
 
-! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and
-! IPRINT, which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will
-! take their default values coded in the solver.
-x = x0
-call lincoa(calfun, x, f, cstrv, Aineq, bineq, rhobeg=1.0_RP, iprint=1_IK, nf=nf, info=info)
+! ! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and
+! ! IPRINT, which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will
+! ! take their default values coded in the solver.
+! x = x0
+! call lincoa(calfun, x, f, cstrv, Aineq, bineq, rhobeg=1.0_RP, iprint=1_IK, nf=nf, info=info)
 
 end program lincoa_exmp

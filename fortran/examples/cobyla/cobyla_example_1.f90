@@ -64,28 +64,28 @@ end module calcfc_mod
 program cobyla_exmp
 
 ! The following line makes the solver available.
-use cobyla_mod, only : cobyla
+! use cobyla_mod, only : cobyla
 
-! The following line specifies which module provides CALCFC and CALLBACK_FCN.
-use calcfc_mod, only : RP, IK, calcfc, callback_fcn
+! ! The following line specifies which module provides CALCFC and CALLBACK_FCN.
+! use calcfc_mod, only : RP, IK, calcfc, callback_fcn
 
-implicit none
+! implicit none
 
-integer, parameter :: n = 2
-integer :: nf, info
-real(RP) :: f, x(n), x0(n), cstrv
+! integer, parameter :: n = 2
+! integer :: nf, info
+! real(RP) :: f, x(n), x0(n), cstrv
 
-! Define the starting point.
-x0 = 0.0_RP
+! ! Define the starting point.
+! x0 = 0.0_RP
 
-! The following lines illustrates how to call the solver.
-x = x0
-call cobyla(calcfc, 1_IK, x, f, cstrv)  ! This call will not print anything.
+! ! The following lines illustrates how to call the solver.
+! x = x0
+! call cobyla(calcfc, 1_IK, x, f, cstrv)  ! This call will not print anything.
 
-! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and
-! IPRINT, which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will
-! take their default values coded in the solver.
-x = x0
-call cobyla(calcfc, 1_IK, x, f, cstrv, rhobeg=1.0_RP, iprint=1_IK, nf=nf, info=info, callback_fcn=callback_fcn)
+! ! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and
+! ! IPRINT, which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will
+! ! take their default values coded in the solver.
+! x = x0
+! call cobyla(calcfc, 1_IK, x, f, cstrv, rhobeg=1.0_RP, iprint=1_IK, nf=nf, info=info, callback_fcn=callback_fcn)
 
 end program cobyla_exmp

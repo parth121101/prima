@@ -59,34 +59,27 @@ end module calfun_mod
 !---------------------------------------- THE MAIN PROGRAM ----------------------------------------!
 program bobyqa_exmp
 
-! The following line makes the solver available.
-use bobyqa_mod, only : bobyqa
-
-! The following line specifies which module provides CALFUN and CALLBACK_FCN.
-use calfun_mod, only : RP, IK, calfun, callback_fcn
-
-implicit none
-
-integer, parameter :: n = 2
-integer :: nf, info
-real(RP) :: f, x(n), x0(n), lb(n), ub(n)
-
-! Define the starting point.
-x0 = 0.0_RP
-
-! Define the lower and upper bounds. We define an upper bound that will be active
-! in order to demonstrate the usage of bounds.
-lb = -1.0_RP
-ub = 4.5_RP
-
-! The following lines illustrates how to call the solver.
-x = x0
-call bobyqa(calfun, x, f, lb, ub)  ! This call will not print anything.
-
-! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and
-! IPRINT, which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will
-! take their default values coded in the solver.
-x = x0
+ The following line makes the solver available.
+ use bobyqa_mod, only : bobyqa
+ ! The following line specifies which module provides CALFUN and CALLBACK_FCN.
+ use calfun_mod, only : RP, IK, calfun, callback_fcn
+ implicit none
+ integer, parameter :: n = 2
+ integer :: nf, info
+ real(RP) :: f, x(n), x0(n), lb(n), ub(n)
+ ! Define the starting point.
+ x0 = 0.0_RP
+ ! Define the lower and upper bounds. We define an upper bound that will be active
+ ! in order to demonstrate the usage of bounds.
+ lb = -1.0_RP
+ ub = 4.5_RP
+ ! The following lines illustrates how to call the solver.
+ x = x0
+ call bobyqa(calfun, x, f, lb, ub)  ! This call will not print anything.
+ ! In addition to the compulsory arguments, the following illustration specifies also RHOBEG and
+ ! IPRINT, which are optional. All the unspecified optional arguments (RHOEND, MAXFUN, etc.) will
+ ! take their default values coded in the solver.
+ x = x0
 call bobyqa(calfun, x, f, lb, ub, rhobeg=1.0_RP, iprint=1_IK, nf=nf, info=info, callback_fcn=callback_fcn)
 
 end program bobyqa_exmp
