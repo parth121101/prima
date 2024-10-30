@@ -1,5 +1,5 @@
 
-add_library (primaf
+SET (SRC
   common/linalg.f90
   common/pintrf.f90
   common/string.f90
@@ -56,6 +56,9 @@ add_library (primaf
   uobyqa/uobyqb.f90
   uobyqa/uobyqa.f90
 )
+add_library(primaf ${SRC})
+install(TARGETS primaf EXPORT primaf-targets DESTINATION lib)
+
 
 set (PRIMA_REAL_PRECISION "64" CACHE STRING "real precision")
 set (PRIMA_INTEGER_KIND "0" CACHE STRING "integer kind")

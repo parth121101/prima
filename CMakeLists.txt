@@ -4,7 +4,7 @@ set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type")
 
 project (prima Fortran)
 
-option (BUILD_SHARED_LIBS "shared/static" ON)
+# option (BUILD_SHARED_LIBS "shared/static" ON)
 
 include (GNUInstallDirs)
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} --cpp")
