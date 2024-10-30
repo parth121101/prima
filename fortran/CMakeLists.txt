@@ -59,6 +59,18 @@ SET (SRC
 add_library(primaf ${SRC})
 install(TARGETS primaf EXPORT primaf-targets DESTINATION lib)
 
+# Copy *.mod files from fortran to c after the build
+add_custom_command(
+    TARGET primaf
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_BINARY_DIR}/fortran
+    ${CMAKE_BINARY_DIR}/c
+    COMMENT "Copying .mod files to /Users/pranavchiku/repos/prima/build/c"
+)
+
+add_custom_target(copy_mod_files ALL DEPENDS tests)
+add_dependencies(copy_mod_files tests)
+
 
 set (PRIMA_REAL_PRECISION "64" CACHE STRING "real precision")
 set (PRIMA_INTEGER_KIND "0" CACHE STRING "integer kind")
