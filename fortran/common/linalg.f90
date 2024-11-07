@@ -706,6 +706,7 @@ implicit none
 real(RP), intent(in) :: A(:, :)
 ! Outputs
 real(RP) :: B(size(A, 1), size(A, 1))
+real(RP) :: B_(size(A, 1), size(A, 1))
 ! Local variables
 character(len=*), parameter :: srname = 'INV'
 integer(IK) :: P(size(A, 1))
@@ -755,7 +756,10 @@ else
         B(:, i) = (Q(:, i) - matprod(B(:, i + 1:n), R(i + 1:n, i))) / R(i, i)
     end do
     InvP(P) = linspace(1_IK, n, n) ! The inverse permutation
-    B = transpose(B(:, InvP))
+    do i = 1, size(InvP, 1)
+        B_(:, i) = B(:, InvP(i))
+    end do
+    B = transpose(B_)
 end if
 
 !====================!
@@ -2200,6 +2204,8 @@ implicit none
 
 ! Inputs
 logical, intent(in) :: x(:)
+logical, intent(in) :: x_(:)
+integer :: i
 ! Outputs
 integer(IK), allocatable :: loc(:) ! INTEGER(IK) :: LOC(COUNT(X)) does not work with Absoft 22.0
 ! Local variables
@@ -2213,6 +2219,9 @@ integer(IK) :: n
 call safealloc(loc, int(count(x), IK)) ! Removable in F03.
 n = int(size(x), IK)
 loc = pack(linspace(1_IK, n, n), mask=x)
+do i = 1, size(loc, 1)
+    x_(i) = x(loc(i))
+end do
 
 !====================!
 !  Calculation ends  !
@@ -2222,7 +2231,7 @@ loc = pack(linspace(1_IK, n, n), mask=x)
 if (DEBUGGING) then
     call assert(all(loc >= 1 .and. loc <= n), '1 <= LOC <= N', srname)
     call assert(size(loc) == count(x), 'SIZE(LOC) == COUNT(X)', srname)
-    call assert(all(x(loc)), 'X(LOC) is all TRUE', srname)
+    call assert(all(x_), 'X(LOC) is all TRUE', srname)
     call assert(all(loc(2:size(loc)) > loc(1:size(loc) - 1)), 'LOC is strictly ascending', srname)
 end if
 end function trueloc
@@ -2239,6 +2248,8 @@ implicit none
 
 ! Inputs
 logical, intent(in) :: x(:)
+logical, intent(in) :: x_(:)
+integer :: i
 ! Outputs
 integer(IK), allocatable :: loc(:) ! INTEGER(IK) :: LOC(COUNT(.NOT.X)) does not work with Absoft 22.0
 ! Local variables
@@ -2250,6 +2261,9 @@ character(len=*), parameter :: srname = 'FALSELOC'
 
 call safealloc(loc, int(count(.not. x), IK)) ! Removable in F03.
 loc = trueloc(.not. x)
+do i = 1, size(loc, 1)
+    x_(i) = x(loc(i))
+end do
 
 !====================!
 !  Calculation ends  !
@@ -2259,7 +2273,7 @@ loc = trueloc(.not. x)
 if (DEBUGGING) then
     call assert(all(loc >= 1 .and. loc <= size(x)), '1 <= LOC <= N', srname)
     call assert(size(loc) == size(x) - count(x), 'SIZE(LOC) == SIZE(X) - COUNT(X)', srname)
-    call assert(all(.not. x(loc)), 'X(LOC) is all FALSE', srname)
+    call assert(all(.not. x_), 'X(LOC) is all FALSE', srname)
     call assert(all(loc(2:size(loc)) > loc(1:size(loc) - 1)), 'LOC is strictly ascending', srname)
 end if
 end function falseloc

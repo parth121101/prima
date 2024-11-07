@@ -72,9 +72,12 @@ integer(IK), intent(out) :: kopt
 integer(IK), intent(out) :: nf
 real(RP), intent(out) :: fhist(:)   ! FHIST(MAXFHIST)
 real(RP), intent(out) :: fval(:)    ! FVAL(NPT)
+real(RP), intent(out) :: fval_1(:)  
+real(RP), intent(out) :: fval_2(:)    
 real(RP), intent(out) :: xbase(:)   ! XBASE(N)
 real(RP), intent(out) :: xhist(:, :)    ! XHIST(N, MAXXHIST)
 real(RP), intent(out) :: xpt(:, :)  ! XPT(N, NPT)
+real(RP), intent(out) :: xpt_(:, :)  ! XPT(N, NPT)
 
 ! Local variables
 character(len=*), parameter :: solver = 'NEWUOA'
@@ -89,6 +92,8 @@ integer(IK) :: subinfo
 logical :: evaluated(size(fval))
 real(RP) :: f
 real(RP) :: x(size(x0))
+integer :: i, col
+integer :: source_col_1, source_col_2
 
 ! Sizes
 n = int(size(xpt, 1), kind(n))
@@ -189,14 +194,31 @@ ij = setij(n, npt)
 ! on FVAL(2 : 2*N + 1), and it is the sole origin of the such dependency. If we remove the revision
 ! IJ, then the evaluations of FVAL(1 : NPT) can be merged, and they are totally PARALLELIZABLE; this
 ! can be beneficial if the function evaluations are expensive, which is likely the case.
-where (fval(ij(1, :) + n + 1) < fval(ij(1, :) + 1)) ij(1, :) = ij(1, :) + n
-where (fval(ij(2, :) + n + 1) < fval(ij(2, :) + 1)) ij(2, :) = ij(2, :) + n
+do i = 1, size(ij, 2)
+    fval_1(i) = fval(ij(1, i) + n + 1) 
+end do
+do i = 1, size(ij, 2)
+    fval_2(i) = fval(ij(1, i) + 1) 
+end do
+where (fval_1 < fval_2) ij(1, :) = ij(1, :) + n
+do i = 1, size(ij, 2)
+    fval_1(i) = fval(ij(2, i) + n + 1) 
+end do
+do i = 1, size(ij, 2)
+    fval_2(i) = fval(ij(2, i) + 1) 
+end do
+where (fval_1 < fval_2) ij(2, :) = ij(2, :) + n
 ! MATLAB (but not Fortran) can index a vector by a 2D array of indices, thus the MATLAB code is
 !!MATLAB: ij(fval(ij + n + 1) < fval(ij + 1)) = ij(fval(ij + n  + 1) < fval(ij + 1)) + n;
 
 ! Set XPT(:, 2*N + 2 : NPT). It depends on IJ and hence on FVAL(2 : 2*N + 1). Indeed, XPT(:, K) has
 ! only two nonzeros for each K >= 2*N+2.
-xpt(:, 2 * n + 2:npt) = xpt(:, ij(1, :) + 1) + xpt(:, ij(2, :) + 1)
+do col = 2*n + 2, npt
+    source_col_1 = ij(1, col) + 1
+    source_col_2 = ij(2, col) + 1
+    xpt_(:, col) = xpt(:, source_col_1) + xpt(:, source_col_2)
+end do
+xpt = xpt_
 
 ! Set FVAL(2*N + 2 : NPT) by evaluating F. Totally parallelizable except for FMSG.
 if (info == INFO_DFT) then

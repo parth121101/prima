@@ -89,6 +89,7 @@ real(RP), intent(out) :: fval(:)  ! FVAL(NPT)
 real(RP), intent(out) :: xbase(:)  ! XBASE(N)
 real(RP), intent(out) :: xhist(:, :)  ! XHIST(N, MAXXHIST)
 real(RP), intent(out) :: xpt(:, :)  ! XPT(N, NPT)
+real(RP), intent(out) :: xpt_(:, :)  ! XPT(N, NPT)
 
 ! Local variables
 character(len=*), parameter :: solver = 'LINCOA'
@@ -104,6 +105,8 @@ integer(IK) :: npt
 integer(IK) :: subinfo
 integer(IK), allocatable :: ixl(:)
 integer(IK), allocatable :: ixu(:)
+integer :: i, col
+integer :: source_col_1, source_col_2
 logical :: feasible(size(xpt, 2))
 real(RP) :: constr(count(xl > -BOUNDMAX) + count(xu < BOUNDMAX) + 2 * size(beq) + size(bineq))
 real(RP) :: constr_leq(size(beq))
@@ -186,7 +189,12 @@ ij = setij(n, npt)
 ! Set XPT(:, 2*N + 2 : NPT).
 ! Indeed, XPT(:, K) has only two nonzeros for each K >= 2*N + 2,
 ! N.B.: The 1 in IJ + 1 comes from the fact that XPT(:, 1) corresponds to XBASE.
-xpt(:, 2 * n + 2:npt) = xpt(:, ij(1, :) + 1) + xpt(:, ij(2, :) + 1)
+do col = 2*n + 2, npt
+    source_col_1 = ij(1, col) + 1
+    source_col_2 = ij(2, col) + 1
+    xpt_(:, col) = xpt(:, source_col_1) + xpt(:, source_col_2)
+end do
+xpt = xpt_
 
 ! Update the constraint right-hand sides to allow for the shift XBASE.
 b = b - matprod(xbase, amat)

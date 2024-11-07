@@ -656,7 +656,9 @@ implicit none
 
 ! Inputs
 real(RP), intent(in) :: Aeq(:, :)
+real(RP), intent(in) :: Aeq_(size(Aeq, 1), size(Aeq, 2))
 real(RP), intent(in) :: Aineq(:, :)
+real(RP), intent(in) :: Aineq_(size(Aineq, 1), size(Aineq, 2))
 real(RP), intent(in) :: beq(:)
 real(RP), intent(in) :: bineq(:)
 real(RP), intent(in) :: rhoend
@@ -677,6 +679,7 @@ integer(IK) :: mineq
 integer(IK) :: mxl
 integer(IK) :: mxu
 integer(IK) :: n
+integer(IK) :: i
 integer(IK), allocatable :: ieq(:)
 integer(IK), allocatable :: iineq(:)
 integer(IK), allocatable :: ixl(:)
@@ -740,8 +743,14 @@ iineq = trueloc(Aineq_norm > 0)
 ! 1. The treatment of the equality constraints is naive. One may choose to eliminate them instead.
 ! 2. The code below is quite inefficient in terms of memory, but we prefer readability.
 idmat = eye(n, n)
+do i = 1, size(ieq)
+    Aeq_(i, :) = ieq(i)
+end do
+do i = 1, size(iineq)
+    Aineq_(i, :) = iineq(i)
+end do
 amat = reshape(shape=shape(amat), source= &
-    & [-idmat(:, ixl), idmat(:, ixu), -transpose(Aeq(ieq, :)), transpose(Aeq(ieq, :)), transpose(Aineq(iineq, :))])
+    & [-idmat(:, ixl), idmat(:, ixu), -transpose(Aeq_), transpose(Aeq_), transpose(Aineq_)])
 bvec = [-xl(ixl), xu(ixu), -beq(ieq), beq(ieq), bineq(iineq)]
 !!MATLAB code:
 !!amat = [-idmat(:, ixl), idmat(:, ixu), -Aeq(ieq, :)', Aeq(ieq, :)', Aineq(iineq, :)'];

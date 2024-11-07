@@ -54,6 +54,7 @@ integer(IK), intent(inout) :: nfilt
 real(RP), intent(inout) :: cfilt(:)  ! MAXFILT
 real(RP), intent(inout) :: ffilt(:)  ! MAXFILT
 real(RP), intent(inout) :: xfilt(:, :) ! (N, MAXFILT)
+real(RP), intent(inout) :: xfilt_(:, :) ! (N, MAXFILT)
 real(RP), intent(inout), optional :: confilt(:, :)  ! (M, MAXFILT)
 
 ! Local variables
@@ -63,6 +64,7 @@ integer(IK) :: kworst
 integer(IK) :: m
 integer(IK) :: maxfilt
 integer(IK) :: n
+integer(IK) :: i
 logical :: keep(nfilt)
 real(RP) :: cfilt_shifted(size(ffilt))
 real(RP) :: cref
@@ -166,11 +168,14 @@ end if
 
 nfilt = int(count(keep), kind(nfilt))
 index_to_keep(1:nfilt) = trueloc(keep)
-xfilt(:, 1:nfilt) = xfilt(:, index_to_keep(1:nfilt))
+xfilt_ = xfilt
+do i = 1, nfilt
+    xfilt(:, i) = xfilt_(:, index_to_keep(i))
+end do
 ffilt(1:nfilt) = ffilt(index_to_keep(1:nfilt))
 cfilt(1:nfilt) = cfilt(index_to_keep(1:nfilt))
 if (present(confilt) .and. present(constr)) then
-    confilt(:, 1:nfilt) = confilt(:, index_to_keep(1:nfilt))
+    ! confilt(:, 1:nfilt) = confilt(:, index_to_keep(1:nfilt))
 end if
 
 nfilt = nfilt + 1_IK

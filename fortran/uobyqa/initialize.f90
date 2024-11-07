@@ -57,6 +57,7 @@ real(RP), intent(out) :: fval(:)
 real(RP), intent(out) :: xbase(:)   ! XBASE(N)
 real(RP), intent(out) :: xhist(:, :)    ! XHIST(N, MAXXHIST)
 real(RP), intent(out) :: xpt(:, :)  ! XPT(N, NPT)
+real(RP), intent(out) :: xpt_(:, :)  ! XPT(N, NPT)
 
 ! Local variables
 character(len=*), parameter :: solver = 'UOBYQA'
@@ -71,6 +72,7 @@ integer(IK) :: maxxhist
 integer(IK) :: n
 integer(IK) :: npt
 integer(IK) :: subinfo
+integer :: i
 logical :: evaluated(size(xpt, 2))
 real(RP) :: f
 real(RP) :: x(size(x0))
@@ -127,7 +129,10 @@ fval = REALMAX
 ! Set XPT(:, 1 : 2*N+1) and FVAL(:, 1 : 2*N+1).
 xpt = ZERO
 kk = linspace(2_IK, 2_IK * n, n)
-xpt(:, kk) = rhobeg * eye(n)
+xpt_ = rhobeg * eye(n)
+do i = 1, size(kk, 1)
+  xpt(: ,kk(i)) = xpt_(:, i)
+end do
 do k = 1, 2_IK * n + 1_IK
     x = xpt(:, k) + xbase
     call evaluate(calfun, x, f)
