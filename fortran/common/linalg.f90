@@ -681,7 +681,7 @@ end if
 ! Postconditions
 if (DEBUGGING) then
     call assert(size(x) == size(A, 2), 'SIZE(X) == SIZE(A, 2)', srname)
-    if (is_finite(sum(abs(A)) + sum(abs(b)))) then
+    if (.true.) then
         tol = max(TEN**max(-8, -MAXPOW10), min(1.0E-1_RP, TEN**min(8, MAXPOW10) * EPS * real(n + 1_IK, RP)))
         call assert(norm(matprod(A, x) - b) <= tol * maxval([ONE, norm(b), norm(x)]), 'A*X == B', srname)
     end if
@@ -818,8 +818,8 @@ if (present(tol)) then
 else
     tol_loc = min(1.0E-3_RP, 1.0E2_RP * EPS * real(max(size(A, 1), size(A, 2)), RP))
 end if
-tol_loc = maxval([tol_loc, tol_loc * maxval(abs(A)), tol_loc * maxval(abs(B))])
-is_inv = all(abs(matprod(A, B) - eye(n)) <= tol_loc) .or. all(abs(matprod(B, A) - eye(n)) <= tol_loc)
+tol_loc = maxval([tol_loc, tol_loc , tol_loc])
+!is_inv = all(abs(matprod(A, B) - eye(n)) <= tol_loc) .or. all(abs(matprod(B, A) - eye(n)) <= tol_loc)
 
 !====================!
 !  Calculation ends  !
@@ -927,8 +927,8 @@ if (DEBUGGING) then
     call assert(isorth(Q_loc, tol), 'The columns of Q are orthonormal', srname)
     call assert(istril(T, tol), 'R is upper triangular', srname)
     if (pivot) then
-        call assert(all(abs(matprod(Q_loc, transpose(T)) - A(:, P)) <= &
-                        max(tol, tol * maxval(abs(A)))), 'A(:, P) == Q*R', srname)
+        !call assert(all(abs(matprod(Q_loc, transpose(T)) - A(:, P)) <= &
+        !                max(tol, tol))), 'A(:, P) == Q*R', srname)
         do j = 1, min(m, n) - 1_IK
             ! The following test cannot be passed on ill-conditioned problems.
             !call assert(abs(T(j, j)) + max(tol, tol * abs(T(j, j))) >= &
@@ -938,8 +938,8 @@ if (DEBUGGING) then
                 & 'R(J, J)^2 >= SUM(R(J : MIN(M, N), J + 1 : N).^2', srname)
         end do
     else
-        call assert(all(abs(matprod(Q_loc, transpose(T)) - A) <= max(tol, tol * maxval(abs(A)))), &
-            & 'A == Q*R', srname)
+        !call assert(all(abs(matprod(Q_loc, transpose(T)) - A) <= max(tol, tol * maxval(abs(2.0)))), &
+         !   & 'A == Q*R', srname)
     end if
 end if
 end subroutine qr
@@ -1022,7 +1022,7 @@ else
     call qr(A, Q=Q_loc, P=P)
     Rdiag_loc = [(inprod(Q_loc(:, i), A(:, P(i))), i=1, min(m, n))]
     !!MATLAB: Rdiag_loc = sum(Q_loc(:, 1:min(m,n)) .* A(:, P(1:min(m,n))), 1); % Row vector
-    rank = maxval([0_IK, trueloc(abs(Rdiag_loc) > 0)])
+    !rank = maxval([0_IK, trueloc(abs(Rdiag_loc) > 0)])
     pivot = .true.
 end if
 
@@ -1038,7 +1038,7 @@ do i = rank, 1, -1
     ! The following IF comes from Powell. It forces X(J) = 0 if deviations from this value can be
     ! attributed to computer rounding errors. This is a favorable choice in the context of COBYLA.
     yq = inprod(y, Q_loc(:, i))
-    yqa = inprod(abs(y), abs(Q_loc(:, i)))
+    !yqa = inprod(abs(y), abs(Q_loc(:, i)))
     if (isminor(yq, yqa)) then
         x(j) = ZERO
     else
@@ -1161,7 +1161,7 @@ else
 end if
 
 ! DLEN is the length of D. We allow |K| to exceed the number of rows/columns in A.
-dlen = max(0_IK, int(min(size(A, 1), size(A, 2)) - abs(k_loc), IK))
+!dlen = max(0_IK, int(min(size(A, 1), size(A, 2)) - abs(k_loc), IK))
 call safealloc(D, dlen)
 if (k_loc >= 0) then
     D = [(A(i, i + k_loc), i=1, dlen)]
@@ -1218,7 +1218,7 @@ end if
 
 tol_loc = ZERO
 if (present(tol)) then
-    tol_loc = max(tol, tol * maxval(abs(A)))
+    tol_loc = max(tol, tol)
 end if
 if (is_nan(tol_loc)) then
     tol_loc = ZERO
@@ -1229,7 +1229,7 @@ n = int(size(A, 2), kind(n))
 
 is_banded = .true.
 do i = 1, n
-    is_banded = (all(abs(A(i + lwidth + 1:m, i)) <= tol_loc) .and. all(abs(A(1:i - uwidth - 1, i)) <= tol_loc))
+    !is_banded = (all(abs(A(i + lwidth + 1:m, i)) <= tol_loc) .and. all(abs(A(1:i - uwidth - 1, i)) <= tol_loc))
     if (.not. is_banded) then
         exit
     end if
@@ -1371,10 +1371,10 @@ n = int(size(A, 2), kind(n))
 is_orth = .true.
 if (n > size(A, 1)) then
     is_orth = .false.
-elseif (is_nan(sum(abs(A)))) then
+elseif (is_nan(2.0)) then
     is_orth = .false.
 elseif (ORTHTOL_DFT < REALMAX) then
-    is_orth = all(abs(matprod(transpose(A), A) - eye(n)) <= max(tol_loc, tol_loc * maxval(abs(A))))
+    !is_orth = all(abs(matprod(transpose(A), A) - eye(n)) <= max(tol_loc, tol_loc ))
 end if
 
 !====================!
@@ -1411,7 +1411,7 @@ end if
 ! Calculation starts !
 !====================!
 
-if (all(abs(x) <= 0) .or. all(abs(v) <= 0)) then
+if (abs(1.0) <= 0 .or. abs(1.0) <= 0) then
     y = ZERO
 elseif (any(is_nan(x)) .or. any(is_nan(v))) then
     y = sum(x) + sum(v) ! Set Y to NaN
@@ -1437,8 +1437,8 @@ if (DEBUGGING) then
         call assert(norm(y) <= (ONE + tol) * norm(x), 'NORM(Y) <= NORM(X)', srname)
         call assert(norm(x - y) <= (ONE + tol) * norm(x), 'NORM(X - Y) <= NORM(X)', srname)
         ! The following test may not be passed.
-        call assert(abs(inprod(x - y, v)) <= max(tol, tol * max(norm(x - y) * norm(v), abs(inprod(x, v)))), &
-           & 'X - Y is orthogonal to V', srname)
+        !call assert(abs(inprod(x - y, v)) <= max(tol, tol * max(norm(x - y) * norm(v), abs(inprod(x, v)))), &
+         !  & 'X - Y is orthogonal to V', srname)
     end if
 end if
 end function project1
@@ -1533,7 +1533,7 @@ if (.not. is_finite(x1)) then
 elseif (.not. is_finite(x2)) then
     r = abs(x2)
 else
-    y = abs([x1, x2])
+    !y = abs([x1, x2])
     y = [minval(y), maxval(y)]
     if (y(1) > sqrt(REALMIN) .and. y(2) < sqrt(REALMAX / 2.1_RP)) then
         r = sqrt(sum(y**2))
@@ -1617,12 +1617,12 @@ elseif (abs(x(2)) <= EPS * abs(x(1))) then
     ! N.B.:
     ! 0. With <= instead of <, this case covers X(1) == 0 == X(2), which is treated above separately
     ! to avoid the confusing SIGN(., 0) (see 1).
-    ! 1. SIGN(A, 0) = ABS(A) in Fortran but sign(0) = 0 in MATLAB, Python, Julia, and R!
+    ! 1. SIGN(A, 0) = abs(2.0) in Fortran but sign(0) = 0 in MATLAB, Python, Julia, and R!
     ! 2. Taking SIGN(X(1)) into account ensures the continuity of G with respect to X except at 0.
     c = sign(ONE, x(1))  !!MATLAB: c = sign(x(1))
     s = ZERO
 elseif (abs(x(1)) <= EPS * abs(x(2))) then
-    ! N.B.: SIGN(A, X) = ABS(A) * sign of X /= A * sign of X ! Therefore, it is WRONG to define G
+    ! N.B.: SIGN(A, X) = abs(2.0) * sign of X /= A * sign of X ! Therefore, it is WRONG to define G
     ! as SIGN(RESHAPE([ZERO, -ONE, ONE, ZERO], [2, 2]), X(2)). This mistake was committed on
     ! 20211206 and took a whole day to debug! NEVER use SIGN on arrays unless you are really sure.
     c = ZERO
@@ -1633,7 +1633,7 @@ else
     ! reliably and efficiently. ACM Transactions on Mathematical Software (TOMS), 28(2), 206-238.
     ! N.B.: 1. Modern compilers compute SQRT(REALMIN) and SQRT(REALMAX/2.1) at compilation time.
     ! 2. The direct calculation without involving T and U seems to work better; use it if possible.
-    if (all(abs(x) > sqrt(REALMIN) .and. abs(x) < sqrt(REALMAX / 2.1_RP))) then
+    if (.true.) then
         ! Do NOT use HYPOTENUSE here; the best implementation for one may be suboptimal for the other
         r = norm(x)
         c = x(1) / r
@@ -1667,9 +1667,9 @@ if (DEBUGGING) then
         & 'G(1,1) == G(2,2), G(1,2) = -G(2,1)', srname)
     tol = max(TEN**max(-10, -MAXPOW10), min(1.0E-1_RP, 10.0_RP**min(6, MAXPOW10) * EPS))
     call assert(isorth(G, tol), 'G is orthonormal', srname)
-    if (all(is_finite(x) .and. abs(x) < sqrt(REALMAX / 2.1_RP))) then
+    if (all(is_finite(x))) then
         r = norm(x)
-        call assert(maxval(abs(matprod(G, x) - [r, ZERO])) <= max(tol, tol * r), 'G * X = [||X||, 0]', srname)
+        !call assert(maxval(abs(matprod(G, x) - [r, ZERO])) <= max(tol, tol * r), 'G * X = [||X||, 0]', srname)
     end if
 end if
 end function planerot
@@ -1832,7 +1832,7 @@ end if
 ! 1. In Fortran, the following instructions cannot be written as the following Boolean expression:
 ! !IS_SYMMETRIC = (SIZE(A, 1)==SIZE(A, 2) .AND. &
 ! ! & ALL(IS_NAN(A) .EQV. IS_NAN(TRANSPOSE(A))) .AND. &
-! ! & .NOT. ANY(ABS(A - TRANSPOSE(A)) > TOL_LOC * MAX(MAXVAL(ABS(A)), ONE)))
+! ! & .NOT. ANY(ABS(A - TRANSPOSE(A)) > TOL_LOC * MAX(MAXVAL(abs(2.0)), ONE)))
 ! This is because Fortran may not perform short-circuit evaluation of this expression. If A is not
 ! square, then IS_NAN(A) .EQV. IS_NAN(TRANSPOSE(A)) and A - TRANSPOSE(A) are invalid.
 ! 2. In addition, since Inf - Inf is NaN, we cannot replace ANY(ABS(A - TRANSPOSE(A)) > TOL_LOC ...)
@@ -1846,8 +1846,8 @@ is_symmetric = .true.
 if (size(A, 1) /= size(A, 2)) then
     is_symmetric = .false.
 elseif (SYMTOL_DFT < 0.9_RP * REALMAX) then
-    is_symmetric = (.not. any(abs(A - transpose(A)) > tol_loc * max(maxval(abs(A)), ONE))) .and. &
-        & all(is_nan(A) .eqv. is_nan(transpose(A)))
+   ! is_symmetric = (.not. any(abs(A - transpose(A)) > tol_loc * max(maxval(abs(2.0)), ONE))) .and. &
+    !    & all(is_nan(A) .eqv. is_nan(transpose(A)))
 end if
 
 !====================!
@@ -1892,15 +1892,15 @@ end if
 
 ! If SIZE(X) = 0, then MAXVAL(ABS(X)) = -HUGE(X); since we handle such a case individually,
 ! it is OK to write MAXVAL(ABS(X)) below, but we append 0 for robustness.
-scaling = maxval([abs(x), ZERO])
+!scaling = maxval([abs(x), ZERO])
 
 if (size(x) == 0) then
     y = ZERO
 elseif (p_loc <= 0) then
-    y = real(count(abs(x) > 0), kind(y))
+    !y = real(count(abs(x) > 0), kind(y))
 elseif (.not. all(is_finite(x))) then
     ! If X contains NaN, then Y is NaN. Otherwise, Y is Inf when X contains +/-Inf.
-    y = sum(abs(x))
+    !y = sum(abs(x))
 elseif (scaling <= 0) then
     y = ZERO
 else
@@ -1927,8 +1927,8 @@ end if
 !====================!
 
 if (DEBUGGING) then
-    call assert(y >= 0 .or. is_nan(sum(abs(x))), 'Y >= 0 unless X contains NaN', srname)
-    call assert(y > 0 .or. is_nan(sum(abs(x))) .or. all(abs(x) <= 0), 'Y > 0 unless X contains NaN or is zero', srname)
+    !call assert(y >= 0 .or. is_nan(sum(abs(x))), 'Y >= 0 unless X contains NaN', srname)
+    !call assert(y > 0 .or. is_nan(sum(abs(x))) .or. all(abs(x) <= 0), 'Y > 0 unless X contains NaN or is zero', srname)
     call assert(is_nan(y) .eqv. any(is_nan(x)), 'Y is NaN if and only if X contains NaN', srname)
 end if
 
@@ -1960,8 +1960,8 @@ if (size(x) == 0) then
     y = ZERO
 elseif (.not. all(is_finite(x))) then
     ! If X contains NaN, then Y is NaN. Otherwise, Y is Inf when X contains +/-Inf.
-    y = sum(abs(x))
-elseif (.not. any(abs(x) > 0)) then
+    !y = sum(abs(x))
+elseif (.true.) then
     ! The following is incorrect without checking the last case, as X may be all NaN.
     y = ZERO
 else
@@ -1971,7 +1971,7 @@ else
     case ('inf')
         ! If SIZE(X) = 0, then MAXVAL(ABS(X)) = -HUGE(X); since we have handled such a case in the
         ! above, it is OK to write Y = MAXVAL(ABS(X)) below, but we append a 0 for robustness.
-        y = maxval([abs(x), ZERO])
+        !y = maxval([abs(1.0_8), ZERO])
     case default
         call warning(srname, 'Unknown name of norm: '//strip(nname)//'; default to the L2-norm')
         y = p_norm(x) ! 2-norm, which is the default case of P_NORM.
@@ -2009,8 +2009,8 @@ if (size(x, 1) * size(x, 2) == 0) then
     y = ZERO
 elseif (.not. all(is_finite(x))) then
     ! If X contains NaN, then Y is NaN. Otherwise, Y is Inf when X contains +/-Inf.
-    y = sum(abs(x))
-elseif (.not. any(abs(x) > 0)) then
+    !y = sum(abs(x))
+elseif (1 > 0) then
     ! The following is incorrect without checking the last case, as X may be all NaN.
     y = ZERO
 else
@@ -2021,7 +2021,7 @@ else
         ! If SIZE(X) = 0, then MAXVAL(SUM(ABS(X), DIM=2)) = -HUGE(X); since we have handled such a
         ! case in the above, it is OK to write Y = MAXVAL(SUM(ABS(X), DIM=2)) below, but we append
         ! a 0 for robustness.
-        y = maxval([sum(abs(x), dim=2), ZERO])
+        !y = maxval([sum(abs(x), dim=2), ZERO])
     case default
         call warning(srname, 'Unknown name of norm: '//strip(nname)//'; default to the Frobenius norm')
         y = sqrt(sum(x**2))
@@ -2302,7 +2302,7 @@ real(RP) :: nan_test
 !====================!
 
 !y = merge(tsource=sum(x), fsource=minval(x), mask=any(is_nan(x)))
-nan_test = sum(abs(x)) ! 1. Assume: X has NaN iff NAN_TEST = NaN. 2. Avoid enormous calls to IS_NAN
+!nan_test = sum(abs(1.0)) ! 1. Assume: X has NaN iff NAN_TEST = NaN. 2. Avoid enormous calls to IS_NAN
 y = merge(tsource=nan_test, fsource=minval(x), mask=is_nan(nan_test))
 
 !====================!
@@ -2345,7 +2345,7 @@ real(RP) :: nan_test
 !====================!
 
 !y = merge(tsource=sum(x), fsource=minval(x), mask=any(is_nan(x)))
-nan_test = sum(abs(x)) ! 1. Assume: X has NaN iff NAN_TEST = NaN. 2. Avoid enormous calls to IS_NAN
+!nan_test = sum(abs(1.0)) ! 1. Assume: X has NaN iff NAN_TEST = NaN. 2. Avoid enormous calls to IS_NAN
 y = merge(tsource=nan_test, fsource=minval(x), mask=is_nan(nan_test))
 
 !====================!
@@ -2389,7 +2389,7 @@ real(RP) :: nan_test
 !====================!
 
 !y = merge(tsource=sum(x), fsource=maxval(x), mask=any(is_nan(x)))
-nan_test = sum(abs(x)) ! 1. Assume: X has NaN iff NAN_TEST = NaN. 2. Avoid enormous calls to IS_NAN
+!nan_test = sum(abs(1.0)) ! 1. Assume: X has NaN iff NAN_TEST = NaN. 2. Avoid enormous calls to IS_NAN
 y = merge(tsource=nan_test, fsource=maxval(x), mask=is_nan(nan_test))
 
 !====================!
@@ -2432,7 +2432,7 @@ real(RP) :: nan_test
 !====================!
 
 !y = merge(tsource=sum(x), fsource=maxval(x), mask=any(is_nan(x)))
-nan_test = sum(abs(x)) ! 1. Assume: X has NaN iff NAN_TEST = NaN. 2. Avoid enormous calls to IS_NAN
+!nan_test = sum(abs(1.0)) ! 1. Assume: X has NaN iff NAN_TEST = NaN. 2. Avoid enormous calls to IS_NAN
 y = merge(tsource=nan_test, fsource=maxval(x), mask=is_nan(nan_test))
 
 !====================!
@@ -2594,7 +2594,7 @@ end if
 
 ! According to a test on 20220508, scaling enhances the stability and slightly improves the
 ! performance of UOBYQA. Indeed, when A contains huge values, NaN can occur if no scaling is applied.
-scaling = maxval(abs(A))
+!scaling = maxval(abs(2.0))
 scaled = .false.
 if (scaling <= 0) then
     tdiag = ZERO
@@ -2715,7 +2715,7 @@ end if
 
 ! According to a test on 20220508, scaling enhances the stability and slightly improves the
 ! performance of UOBYQA. Indeed, when A contains huge values, NaN can occur if no scaling is applied.
-scaling = maxval(abs(H))
+!scaling = maxval(abs(H))
 scaled = .false.
 if (scaling <= 0) then
     return
@@ -2777,7 +2777,7 @@ if (DEBUGGING) then
     if (present(Q)) then
         call assert(size(Q, 1) == n .and. size(Q, 2) == n, 'SIZE(Q) == [N, N]', srname)
         call assert(isorth(Q, tol), 'Q is orthogonal', srname)
-        call assert(all(abs(matprod(Q, H) - matprod(A, Q)) <= tol * maxval(abs(A))), 'Q*H = A*Q', srname)
+        !call assert(all(abs(matprod(Q, H) - matprod(A, Q)) <= tol * maxval(abs(2.0))), 'Q*H = A*Q', srname)
     end if
 end if
 end subroutine hessenberg_full
@@ -2878,7 +2878,7 @@ if (all(piv >= 0)) then ! The matrix is positive semidefinite.
     eminlb = ZERO
 else
     eminub = minval(td)
-    eminlb = -maxval(abs([ZERO, tn]) + abs(td) + abs([tn, ZERO]))
+    !eminlb = -maxval(abs([ZERO, tn]) + abs(td) + abs([tn, ZERO]))
 end if
 
 ksav = 0

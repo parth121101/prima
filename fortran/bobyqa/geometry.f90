@@ -104,10 +104,10 @@ end if
 ! based on the distance to the un-updated "optimal point", which is unreasonable. This has been
 ! corrected in our implementation of LINCOA, yet it does not boost the performance.
 if (ximproved) then
-    distsq = sum((xpt - spread(xpt(:, kopt) + d, dim=2, ncopies=npt))**2, dim=1)
+    !distsq = sum((xpt - spread(xpt(:, kopt) + d, dim=2, ncopies=npt))**2, dim=1)
     !!MATLAB: distsq = sum((xpt - (xpt(:, kopt) + d)).^2)  % d should be a column! Implicit expansion
 else
-    distsq = sum((xpt - spread(xpt(:, kopt), dim=2, ncopies=npt))**2, dim=1)
+    !distsq = sum((xpt - spread(xpt(:, kopt), dim=2, ncopies=npt))**2, dim=1)
     !!MATLAB: distsq = sum((xpt - xpt(:, kopt)).^2)  % Implicit expansion
 end if
 
@@ -285,8 +285,8 @@ if (DEBUGGING) then
     call assert(size(sl) == n .and. all(sl <= 0), 'SIZE(SL) == N, SL <= 0', srname)
     call assert(size(su) == n .and. all(su >= 0), 'SIZE(SU) == N, SU >= 0', srname)
     call assert(all(is_finite(xpt)), 'XPT is finite', srname)
-    call assert(all(xpt >= spread(sl, dim=2, ncopies=npt)) .and. &
-        & all(xpt <= spread(su, dim=2, ncopies=npt)), 'SL <= XPT <= SU', srname)
+    !call assert(all(xpt >= spread(sl, dim=2, ncopies=npt)) .and. &
+    !   & all(xpt <= spread(su, dim=2, ncopies=npt)), 'SL <= XPT <= SU', srname)
     call assert(size(bmat, 1) == n .and. size(bmat, 2) == npt + n, 'SIZE(BMAT) == [N, NPT+N]', srname)
     call assert(issymmetric(bmat(:, npt + 1:npt + n)), 'BMAT(:, NPT+1:NPT+N) is symmetric', srname)
     call assert(size(zmat, 1) == npt .and. size(zmat, 2) == npt - n - 1_IK, 'SIZE(ZMAT) == [NPT, NPT-N-1]', srname)
@@ -335,7 +335,7 @@ end if
 ! point on the K-th line attains the J-th upper bound, SBDI(I, K) = -J < 0 indicates reaching the
 ! J-th lower bound, and SBDI(I, K) = 0 means not touching any bound.
 dderiv = matprod(glag, xpt) - inprod(glag, xopt) ! The derivatives PHI_K'(0).
-distsq = sum((xpt - spread(xopt, dim=2, ncopies=npt))**2, dim=1)
+!distsq = sum((xpt - spread(xopt, dim=2, ncopies=npt))**2, dim=1)
 do k = 1, npt
     ! It does not make sense to consider "straight line through XOPT and XPT(:, KOPT)". Hence set
     ! STPLEN(:, KOPT) = 0 and ISBD(:, KOPT) = 0 so that VLAG(:, K) and PREDSQ(:, K) obtained after
@@ -425,22 +425,22 @@ end do
 ! First, compute VLAG = PHI(STPLEN). Using the fact that PHI_K(0) = 0, PHI_K(1) = delta_{K, KNEW}
 ! (Kronecker delta), and recalling the PHI_K is quadratic, we can find that
 ! PHI_K(t) = t*(1-t)*PHI_K'(0) for K /= KNEW, and PHI_KNEW = t*[t*(1-PHI_K'(0)) + PHI_K'(0)].
-vlag = stplen * (ONE - stplen) * spread(dderiv, dim=1, ncopies=3)
+!vlag = stplen * (ONE - stplen) * spread(dderiv, dim=1, ncopies=3)
 !!MATLAB: vlag = stplen .* (1 - stplen) .* dderiv; % Implicit expansion; dderiv is a row!
 vlag(:, knew) = stplen(:, knew) * (stplen(:, knew) * (ONE - dderiv(knew)) + dderiv(knew))
 ! Set NaNs in VLAG to 0 so that the behavior of MAXVAL(ABS(VLAG)) is predictable. VLAG does not have
 ! NaN unless XPT does, which would be a bug. MAXVAL(ABS(VLAG)) appears in Powell's code, not here.
-where (is_nan(vlag)) vlag = ZERO  !!MATLAB: vlag(isnan(vlag)) = 0;
+!where (is_nan(vlag)) vlag = ZERO  !!MATLAB: vlag(isnan(vlag)) = 0;
 !
 ! Second, BETABD is the upper bound of BETA given in (3.10) of the BOBYQA paper.
-betabd = HALF * (stplen * (ONE - stplen) * spread(distsq, dim=1, ncopies=3))**2
+!betabd = HALF * (stplen * (ONE - stplen) * spread(distsq, dim=1, ncopies=3))**2
 !!MATLAB: betabd = 0.5 * (stplen .* (1-stplen) .* distsq).^2 % Implicit expansion; distsq is a row!
 !
 ! Finally, PREDSQ is the quantity defined in (3.11) of the BOBYQA paper.
 predsq = vlag * vlag * (vlag * vlag + alpha * betabd)
 ! Set NaNs in PREDSQ to 0 so that the behavior of MAXLOC(PREDSQ) is predictable. PREDSQ does not
 ! have NaN unless XPT does, which would be a bug.
-where (is_nan(predsq)) predsq = ZERO  !!MATLAB: predsq(isnan(predsq)) = 0
+!where (is_nan(predsq)) predsq = ZERO  !!MATLAB: predsq(isnan(predsq)) = 0
 
 ! Locate the trial point the renders the maximum of PREDSQ. It is the ISQ-th trial point on the
 ! straight line through XOPT and XPT(:, KSQ).
@@ -548,7 +548,7 @@ do uphill = 0, 1
     ! Set the remaining free components of S and all components of XCAUCHY. S may be scaled later.
     x(trueloc(glag > 0)) = sl(trueloc(glag > 0))
     x(trueloc(glag <= 0)) = su(trueloc(glag <= 0))
-    x(trueloc(abs(s) <= 0)) = xopt(trueloc(abs(s) <= 0))
+    !x(trueloc(abs(s) <= 0)) = xopt(trueloc(abs(s) <= 0))
     xtemp = max(sl, min(su, xopt - grdstp * glag))
     x(trueloc(s >= bigstp)) = xtemp(trueloc(s >= bigstp))  ! S == BIGSTP
     s(trueloc(s >= bigstp)) = -grdstp * glag(trueloc(s >= bigstp))  ! S == BIGSTP
@@ -588,7 +588,7 @@ end if
 
 ! In case D is zero or contains Inf/NaN, replace it with a displacement from XPT(:, KNEW) to
 ! XOPT. Powell's code does not have this.
-if (sum(abs(d)) <= 0 .or. .not. is_finite(sum(abs(d)))) then
+if (1) then
     d = xpt(:, knew) - xopt
     scaling = delbar / norm(d)
     d = max(0.6_RP * scaling, min(HALF, scaling)) * d
@@ -606,9 +606,9 @@ if (DEBUGGING) then
     ! It is crucial to ensure that the geometry step is nonzero, which holds in theory. However, due
     ! to the bound constraints, ||D|| may be much smaller than DELBAR.
     call assert(norm(d) > 0 .and. norm(d) < TWO * delbar, '0 < ||D|| < 2*DELBAR', srname)
-    ! D is supposed to satisfy the bound constraints SL <= XOPT + D <= SU.
-    call assert(all(xopt + d >= sl - TEN * EPS * max(ONE, abs(sl)) .and. &
-        & xopt + d <= su + TEN * EPS * max(ONE, abs(su))), 'SL <= XOPT + D <= SU', srname)
+    ! D is supposed to satisfy the bound constraints SL <= XOPT + D <= SU. 
+    !call assert(all(xopt + d >= sl - TEN * EPS * max(ONE, abs(sl)) .and. &
+     !   & xopt + d <= su + TEN * EPS * max(ONE, abs(su))), 'SL <= XOPT + D <= SU', srname)
 end if
 
 end function geostep

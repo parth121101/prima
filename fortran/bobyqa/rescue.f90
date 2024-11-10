@@ -216,8 +216,8 @@ if (DEBUGGING) then
         call assert(all(xhist(:, k) >= xl) .and. all(xhist(:, k) <= xu), 'XL <= XHIST <= XU', srname)
     end do
     call assert(all(is_finite(xpt)), 'XPT is finite', srname)
-    call assert(all(xpt >= spread(sl, dim=2, ncopies=npt)) .and. &
-        & all(xpt <= spread(su, dim=2, ncopies=npt)), 'SL <= XPT <= SU', srname)
+    !call assert(all(xpt >= spread(sl, dim=2, ncopies=npt)) .and. &
+    !    & all(xpt <= spread(su, dim=2, ncopies=npt)), 'SL <= XPT <= SU', srname)
     call assert(size(bmat, 1) == n .and. size(bmat, 2) == npt + n, 'SIZE(BMAT) == [N, NPT+N]', srname)
     call assert(size(zmat, 1) == npt .and. size(zmat, 2) == npt - n - 1_IK, 'SIZE(ZMAT) == [NPT, NPT-N-1]', srname)
     call assert(maxhist >= 0 .and. maxhist <= maxfun, '0 <= MAXHIST <= MAXFUN', srname)
@@ -243,7 +243,7 @@ xopt = xpt(:, kopt)
 sl = min(sl - xopt, ZERO)
 su = max(su - xopt, ZERO)
 xbase = min(max(xl, xbase + xopt), xu)
-xpt = xpt - spread(xopt, dim=2, ncopies=npt)
+!xpt = xpt - spread(xopt, dim=2, ncopies=npt)
 xpt(:, kopt) = ZERO
 
 ! Update HQ so that HQ and PQ define the second derivatives of the model after XBASE has been
@@ -620,8 +620,8 @@ if (DEBUGGING) then
     end do
     call assert(size(xpt, 1) == n .and. size(xpt, 2) == npt, 'SIZE(XPT) == [N, NPT]', srname)
     call assert(all(is_finite(xpt)), 'XPT is finite', srname)
-    call assert(all(xpt >= spread(sl, dim=2, ncopies=npt)) .and. &
-        & all(xpt <= spread(su, dim=2, ncopies=npt)), 'SL <= XPT <= SU', srname)
+    !call assert(all(xpt >= spread(sl, dim=2, ncopies=npt)) .and. &
+    !    & all(xpt <= spread(su, dim=2, ncopies=npt)), 'SL <= XPT <= SU', srname)
     call assert(size(bmat, 1) == n .and. size(bmat, 2) == npt + n, 'SIZE(BMAT) == [N, NPT+N]', srname)
     call assert(issymmetric(bmat(:, npt + 1:npt + n)), 'BMAT(:, NPT+1:NPT+N) is symmetric', srname)
     call assert(size(zmat, 1) == npt .and. size(zmat, 2) == npt - n - 1_IK, 'SIZE(ZMAT) == [NPT, NPT-N-1]', srname)

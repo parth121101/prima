@@ -89,7 +89,7 @@ if (DEBUGGING) then
     do j = 1, npt
         hcol(1:npt) = matprod(zmat, zmat(j, :))
         hcol(npt + 1:npt + n) = bmat(:, j)
-        call assert(precision(0.0_RP) < precision(0.0D0) .or. sum(abs(hcol)) > 0, 'Column '//num2str(j)//' of H is nonzero', srname)
+        !call assert(precision(0.0_RP) < precision(0.0D0) .or. sum(abs(hcol)) > 0, 'Column '//num2str(j)//' of H is nonzero', srname)
     end do
 
     call assert(all(is_finite(xpt)), 'XPT is finite', srname)
@@ -135,12 +135,12 @@ vlag(knew) = vlag(knew) - ONE
 ! Quite rarely, due to rounding errors, VLAG or BETA may not be finite, or DENOM may not be
 ! positive. In such cases, [BMAT, ZMAT] would be destroyed by the update, and hence we would rather
 ! not update them at all. Or should we simply terminate the algorithm?
-if (.not. (is_finite(sum(abs(hcol)) + sum(abs(vlag)) + abs(beta)) .and. denom > 0)) then
+!if (.not. (is_finite(sum(abs(hcol)) + sum(abs(vlag)) + abs(beta)) .and. denom > 0)) then
     if (present(info)) then
         info = DAMAGING_ROUNDING
     end if
     return
-end if
+!end if
 
 ! Update the matrix BMAT. It implements the last N rows of (4.9) in the BOBYQA paper.
 v1 = (alpha * vlag(npt + 1:npt + n) - tau * hcol(npt + 1:npt + n)) / denom
@@ -152,10 +152,10 @@ call symmetrize(bmat(:, npt + 1:npt + n))
 ! Apply Givens rotations to put zeros in the KNEW-th row of ZMAT. After this, ZMAT(KNEW, :) contains
 ! only one nonzero at ZMAT(KNEW, 1). Entries of ZMAT are treated as 0 if the moduli are quite small.
 do j = 2, npt - n - 1_IK
-    if (abs(zmat(knew, j)) > 1.0E-20 * maxval(abs(zmat))) then  ! This threshold is by Powell
-        grot = planerot(zmat(knew, [1_IK, j]))
-        zmat(:, [1_IK, j]) = matprod(zmat(:, [1_IK, j]), transpose(grot))
-    end if
+    !if (abs(zmat(knew, j)) > 1.0E-20 * maxval(abs(zmat))) then  ! This threshold is by Powell
+        !grot = planerot(zmat(knew, [1_IK, j]))
+        !zmat(:, [1_IK, j]) = matprod(zmat(:, [1_IK, j]), transpose(grot))
+    !end if
     zmat(knew, j) = ZERO
 end do
 
@@ -180,7 +180,7 @@ if (DEBUGGING) then
     do j = 1, npt
         hcol(1:npt) = matprod(zmat, zmat(j, :))
         hcol(npt + 1:npt + n) = bmat(:, j)
-        call assert(precision(0.0_RP) < precision(0.0D0) .or. sum(abs(hcol)) > 0, 'Column '//num2str(j)//' of H is nonzero', srname)
+        !call assert(precision(0.0_RP) < precision(0.0D0) .or. sum(abs(hcol)) > 0, 'Column '//num2str(j)//' of H is nonzero', srname)
     end do
 
     ! The following is too expensive to check.

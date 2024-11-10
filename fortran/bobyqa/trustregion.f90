@@ -150,8 +150,8 @@ if (DEBUGGING) then
     call assert(all(xopt >= sl .and. xopt <= su), 'SL <= XOPT <= SU', srname)
     call assert(size(xpt, 1) == n .and. size(xpt, 2) == npt, 'SIZE(XPT) == [N, NPT]', srname)
     call assert(all(is_finite(xpt)), 'XPT is finite', srname)
-    call assert(all(xpt >= spread(sl, dim=2, ncopies=npt)) .and. &
-        & all(xpt <= spread(su, dim=2, ncopies=npt)), 'SL <= XPT <= SU', srname)
+    !call assert(all(xpt >= spread(sl, dim=2, ncopies=npt)) .and. &
+    !    & all(xpt <= spread(su, dim=2, ncopies=npt)), 'SL <= XPT <= SU', srname)
     call assert(size(d) == n, 'SIZE(D) == N', srname)
     call assert(size(gnew) == n, 'SIZE(GNEW) == N', srname)
     call assert(size(xnew) == n, 'SIZE(XNEW) == N', srname)

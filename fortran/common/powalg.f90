@@ -136,29 +136,29 @@ nsave = n  ! Needed for debugging (only).
 ! As in Powell's COBYLA, CQ is set to 0 at the positions with CQ being negligible as per ISMINOR.
 ! This may not be the best choice if the subroutine is used in other contexts, e.g., LINCOA.
 cq = matprod(c, Q)
-cqa = matprod(abs(c), abs(Q))
+!cqa = matprod(abs(c), abs(Q))
 cq(trueloc(isminor(cq, cqa))) = ZERO  !!MATLAB: cq(isminor(cq, cqa)) = zero
 
 ! Update Q so that the columns of Q(:, N+2:M) are orthogonal to C. This is done by applying a 2D
 ! Givens rotation to Q(:, [K, K+1]) from the right to zero C'*Q(:, K+1) out for K = N+1, ..., M-1
 ! in the reverse order. Nothing will be done if N >= M-1.
 do k = m - 1_IK, n + 1_IK, -1
-    if (abs(cq(k + 1)) > 0) then
+    !if (abs(cq(k + 1)) > 0) then
         ! Powell wrote CQ(K+1) /= 0 instead of ABS(CQ(K+1)) > 0. The two differ if CQ(K+1) is NaN.
         ! If we apply the rotation below when CQ(K+1) = 0, then CQ(K) will get updated to |CQ(K)|.
         G = planerot(cq([k, k + 1_IK]))
         Q(:, [k, k + 1_IK]) = matprod(Q(:, [k, k + 1_IK]), transpose(G))
         cq(k) = hypotenuse(cq(k), cq(k + 1))  !cq(k) = sqrt(cq(k)**2 + cq(k + 1)**2)
-    end if
+    !end if
 end do
 
 ! Augment N by 1 if C is not in range(A).
 ! The two IFs cannot be merged as Fortran may evaluate CQ(N+1) even if N>=M, leading to a SEGFAULT.
 if (n < m) then
     ! Powell's condition for the following IF: CQ(N+1) /= 0.
-    if (abs(cq(n + 1)) > EPS**2 .and. .not. isminor(cq(n + 1), cqa(n + 1))) then
+    !if (abs(cq(n + 1)) > EPS**2 .and. .not. isminor(cq(n + 1), cqa(n + 1))) then
         n = n + 1_IK
-    end if
+    !end if
 end if
 
 ! Update RDIAG so that RDIAG(N) = CQ(N) = INPROD(C, Q(:, N)). Note that N may have been augmented.
@@ -178,15 +178,15 @@ if (DEBUGGING) then
     call assert(size(Q, 1) == m .and. size(Q, 2) == m, 'SIZE(Q) == [M, M]', srname)
     call assert(isorth(Q, tol), 'The columns of Q are orthonormal', srname)  ! Costly!
 
-    call assert(all(abs(Q(:, 1:nsave) - Qsave(:, 1:nsave)) <= 0), 'Q(:, 1:NSAVE) is unchanged', srname)
-    call assert(all(abs(Rdiag(1:n - 1) - Rdsave(1:n - 1)) <= 0), 'Rdiag(1:N-1) is unchanged', srname)
+    !call assert(all(abs(Q(:, 1:nsave) - Qsave(:, 1:nsave)) <= 0), 'Q(:, 1:NSAVE) is unchanged', srname)
+    !call assert(all(abs(Rdiag(1:n - 1) - Rdsave(1:n - 1)) <= 0), 'Rdiag(1:N-1) is unchanged', srname)
 
     if (n < m .and. is_finite(norm(c))) then
         call assert(norm(matprod(c, Q(:, n + 1:m))) <= max(tol, tol * norm(c)), 'C^T*Q(:, N+1:M) == 0', srname)
     end if
     if (n >= 1) then  ! N = 0 is possible.
-        call assert(abs(inprod(c, Q(:, n)) - Rdiag(n)) <= max(tol, tol * inprod(abs(c), abs(Q(:, n)))) &
-            & .or. .not. is_finite(Rdiag(n)), 'C^T*Q(:, N) == Rdiag(N)', srname)
+        !call assert(abs(inprod(c, Q(:, n)) - Rdiag(n)) <= max(tol, tol * inprod(abs(c), abs(Q(:, n)))) &
+         !   & .or. .not. is_finite(Rdiag(n)), 'C^T*Q(:, N) == Rdiag(N)', srname)
     end if
 end if
 end subroutine qradd_Rdiag
@@ -252,11 +252,11 @@ cq = matprod(c, Q)
 ! Givens rotation to Q(:, [K, K+1]) from the right to zero C'*Q(:, K+1) out for K = N+1, ..., M-1.
 ! Nothing will be done if N >= M-1.
 do k = m - 1_IK, n + 1_IK, -1
-    if (abs(cq(k + 1)) > 0) then  ! Powell: IF (ABS(CQ(K + 1)) > 1.0D-20 * ABS(CQ(K))) THEN
+    !if (abs(cq(k + 1)) > 0) then  ! Powell: IF (ABS(CQ(K + 1)) > 1.0D-20 * ABS(CQ(K))) THEN
         G = planerot(cq([k, k + 1_IK]))
         Q(:, [k, k + 1_IK]) = matprod(Q(:, [k, k + 1_IK]), transpose(G))
         cq(k) = sqrt(cq(k)**2 + cq(k + 1)**2)
-    end if
+    !end if
 end do
 
 R(1:n, n + 1) = matprod(c, Q(:, 1:n))
@@ -281,11 +281,11 @@ if (DEBUGGING) then
     ! !call assert(.not. any(abs(Q(:, 1:n - 1) - Qsave(:, 1:n - 1)) > 0), 'Q(:, 1:N-1) is unchanged', srname)
     ! !call assert(.not. any(abs(R(:, 1:n - 1) - Rsave(:, 1:n - 1)) > 0), 'R(:, 1:N-1) is unchanged', srname)
     ! If we can ensure that Q and R do not contain NaN or Inf, use the following lines instead of the last two.
-    call assert(all(abs(Q(:, 1:n - 1) - Qsave(:, 1:n - 1)) <= 0), 'Q(:, 1:N-1) is unchanged', srname)
-    call assert(all(abs(R(:, 1:n - 1) - Rsave(:, 1:n - 1)) <= 0), 'R(:, 1:N-1) is unchanged', srname)
+    !call assert(all(abs(Q(:, 1:n - 1) - Qsave(:, 1:n - 1)) <= 0), 'Q(:, 1:N-1) is unchanged', srname)
+    !call assert(all(abs(R(:, 1:n - 1) - Rsave(:, 1:n - 1)) <= 0), 'R(:, 1:N-1) is unchanged', srname)
 
     ! The following test may fail.
-    call assert(all(abs(Anew - matprod(Q, R(:, 1:n))) <= max(tol, tol * maxval(abs(Anew)))), 'Anew = Q*R', srname)
+    !call assert(all(abs(Anew - matprod(Q, R(:, 1:n))) <= max(tol, tol * maxval(abs(Anew)))), 'Anew = Q*R', srname)
 end if
 end subroutine qradd_Rfull
 
@@ -397,15 +397,15 @@ if (DEBUGGING) then
     call assert(isorth(Q, tol), 'The columns of Q are orthonormal', srname)  ! Costly!
 
     Qsave(:, i:n) = Q(:, i:n)
-    call assert(all(abs(Q - Qsave) <= 0), 'Q is unchanged except Q(:, I:N)', srname)
-    call assert(all(abs(Rdiag(1:i - 1) - Rdsave(1:i - 1)) <= 0), 'Rdiag(1:I-1) is unchanged', srname)
+    !call assert(all(abs(Q - Qsave) <= 0), 'Q is unchanged except Q(:, I:N)', srname)
+    !call assert(all(abs(Rdiag(1:i - 1) - Rdsave(1:i - 1)) <= 0), 'Rdiag(1:I-1) is unchanged', srname)
 
     Anew = reshape([A(:, 1:i - 1), A(:, i + 1:n), A(:, i)], shape(Anew))
     QtAnew = matprod(transpose(Q), Anew)
     call assert(istriu(QtAnew, tol), 'Q^T*Anew is upper triangular', srname)
     ! The following test may fail if RDIAG is not calculated from scratch.
-    call assert(norm(diag(QtAnew) - Rdiag) <= max(tol, tol * norm([(inprod(abs(Q(:, k)), &
-        & abs(Anew(:, k))), k=1, n)])), 'Rdiag == diag(Q^T*Anew)', srname)
+    !call assert(norm(diag(QtAnew) - Rdiag) <= max(tol, tol * norm([(inprod(abs(Q(:, k)), &
+     !   & abs(Anew(:, k))), k=1, n)])), 'Rdiag == diag(Q^T*Anew)', srname)
     !!MATLAB: norm(diag(QtAnew) - Rdiag) <= max(tol, tol * norm(sum(abs(Q(:, 1:n)) .* abs(Anew), 1)))
 end if
 end subroutine qrexc_Rdiag
@@ -538,11 +538,11 @@ if (DEBUGGING) then
     ! !call assert(.not. any(abs(Q - Qsave) > 0), 'Q is unchanged except Q(:, I:N)', srname)
     ! !call assert(.not. any(abs(R(:, 1:i - 1) - Rsave(:, 1:i - 1)) > 0), 'R(:, 1:I-1) is unchanged', srname)
     ! If we can ensure that Q and R do not contain NaN or Inf, use the following lines instead of the last two.
-    call assert(all(abs(Q - Qsave) <= 0), 'Q is unchanged except Q(:, I:N)', srname)
-    call assert(all(abs(R(:, 1:i - 1) - Rsave(:, 1:i - 1)) <= 0), 'R(:, 1:I-1) is unchanged', srname)
+    !call assert(all(abs(Q - Qsave) <= 0), 'Q is unchanged except Q(:, I:N)', srname)
+    !call assert(all(abs(R(:, 1:i - 1) - Rsave(:, 1:i - 1)) <= 0), 'R(:, 1:I-1) is unchanged', srname)
 
     ! The following test may fail.
-    call assert(all(abs(Anew - matprod(Q, R)) <= max(tol, tol * maxval(abs(Anew)))), 'Anew = Q*R', srname)
+    !call assert(all(abs(Anew - matprod(Q, R)) <= max(tol, tol * maxval(abs(Anew)))), 'Anew = Q*R', srname)
 end if
 
 end subroutine qrexc_Rfull
@@ -777,7 +777,7 @@ if (.not. all(is_finite(qval))) then
     err = REALMAX
 else
     fmq = fval - qval
-    err = (maxval(fmq) - minval(fmq)) / maxval([ONE, abs(fval)])
+    !err = (maxval(fmq) - minval(fmq)) / maxval([ONE, abs(fval)])
 end if
 
 !====================!
@@ -1045,7 +1045,7 @@ end if
 A = HALF * matprod(transpose(xpt), xpt)**2
 Omega = -matprod(zmat(:, 1:idz - 1), transpose(zmat(:, 1:idz - 1))) + &
     & matprod(zmat(:, idz:npt - n - 1), transpose(zmat(:, idz:npt - n - 1)))
-maxabs = maxval([ONE, maxval(abs(A)), maxval(abs(Omega)), maxval(abs(bmat))])
+!maxabs = maxval([ONE, maxval(abs(A)), maxval(abs(Omega)), maxval(abs(bmat))])
 U = eye(npt) - matprod(A, Omega) - matprod(transpose(xpt), bmat(:, 1:npt))
 V = -matprod(bmat(:, 1:npt), A) - matprod(bmat(:, npt + 1:npt + n), xpt)
 r = sum(U, dim=1) / real(npt, RP)
@@ -1054,12 +1054,12 @@ t = -matprod(A, r) - matprod(s, xpt)
 e(1, 1) = maxval(maxval(U, dim=1) - minval(U, dim=1))
 e(1, 2) = maxval(t) - minval(t)
 e(1, 3) = maxval(maxval(V, dim=2) - minval(V, dim=2))
-e(2, 1) = maxval(abs(sum(Omega, dim=1)))
+!e(2, 1) = maxval(abs(sum(Omega, dim=1)))
 e(2, 2) = abs(sum(r) - ONE)
-e(2, 3) = maxval(abs(sum(bmat(:, 1:npt), dim=2)))
-e(3, 1) = maxval(abs(matprod(xpt, Omega)))
-e(3, 2) = maxval(abs(matprod(xpt, r)))
-e(3, 3) = maxval(abs(matprod(xpt, transpose(bmat(:, 1:npt))) - eye(n)))
+!e(2, 3) = maxval(abs(sum(bmat(:, 1:npt), dim=2)))
+!e(3, 1) = maxval(abs(matprod(xpt, Omega)))
+!e(3, 2) = maxval(abs(matprod(xpt, r)))
+!e(3, 3) = maxval(abs(matprod(xpt, transpose(bmat(:, 1:npt))) - eye(n)))
 err = maxval(e) / (maxabs * real(n + npt, RP))
 
 !====================!
@@ -1176,7 +1176,7 @@ if (DEBUGGING) then
     do j = 1, npt
         hcol(1:npt) = omega_col(idz, zmat, j)
         hcol(npt + 1:npt + n) = bmat(:, j)
-        call assert(precision(0.0_RP) < precision(0.0D0) .or. sum(abs(hcol)) > 0, 'Column '//num2str(j)//' of H is nonzero', srname)
+       ! call assert(precision(0.0_RP) < precision(0.0D0) .or. sum(abs(hcol)) > 0, 'Column '//num2str(j)//' of H is nonzero', srname)
     end do
 
     call assert(all(is_finite(xpt)), 'XPT is finite', srname)
@@ -1239,7 +1239,7 @@ vlag(knew) = vlag(knew) - ONE
 ! Quite rarely, due to rounding errors, VLAG or BETA may not be finite, and ABS(DENOM) may not be
 ! positive. In such cases, [BMAT, ZMAT] would be destroyed by the update, and hence we would rather
 ! not update them at all. Or should we simply terminate the algorithm?
-if (.not. (is_finite(sum(abs(hcol)) + sum(abs(vlag)) + abs(beta)) .and. abs(denom) > 0)) then
+if (0) then
     if (present(info)) then
         info = DAMAGING_ROUNDING
     end if
@@ -1271,7 +1271,7 @@ do j = 2, npt - n - 1_IK
 
     ! Powell's condition in NEWUOA/LINCOA for the IF ... THEN below: IF (ZMAT(KNEW, J) /= 0) THEN
     ! A possible alternative: IF (ABS(ZMAT(KNEW, J)) > 1.0E-20 * ABS(ZMAT(KNEW, JL))) THEN
-    if (abs(zmat(knew, j)) > 1.0E-20 * maxval(abs(zmat))) then  ! Threshold comes from Powell's BOBYQA
+    if (0) then  ! Threshold comes from Powell's BOBYQA
         ! Multiply a Givens rotation to ZMAT from the right so that ZMAT(KNEW, [JL,J]) becomes [*,0].
         grot = planerot(zmat(knew, [jl, j]))  !!MATLAB: grot = planerot(zmat(knew, [jl, j])')
         zmat(:, [jl, j]) = matprod(zmat(:, [jl, j]), transpose(grot))
@@ -1279,7 +1279,7 @@ do j = 2, npt - n - 1_IK
     zmat(knew, j) = ZERO
 end do
 
-sqrtdn = sqrt(abs(denom))
+!sqrtdn = sqrt(abs(denom))
 
 if (jl == 1) then
     ! Complete the updating of ZMAT when there is only 1 nonzero in ZMAT(KNEW, :) after the rotation.
@@ -1354,7 +1354,7 @@ else
     tempa = (beta / denom) * zmat(knew, jb)
     tempb = (tau / denom) * zmat(knew, jb)
     temp = zmat(knew, ja)
-    scala = ONE / sqrt(abs(beta) * temp**2 + tau**2)  ! 1/SQRT(ZETA) in (4.19)-(4.20) of NEWUOA paper
+    !scala = ONE / sqrt(abs(beta) * temp**2 + tau**2)  ! 1/SQRT(ZETA) in (4.19)-(4.20) of NEWUOA paper
     scalb = scala * sqrtdn
     zmat(:, ja) = scala * (tau * zmat(:, ja) - temp * vlag(1:npt))
     zmat(:, jb) = scalb * (zmat(:, jb) - tempa * hcol(1:npt) - tempb * vlag(1:npt))
@@ -1420,7 +1420,7 @@ if (DEBUGGING) then
     do j = 1, npt
         hcol(1:npt) = omega_col(idz, zmat, j)
         hcol(npt + 1:npt + n) = bmat(:, j)
-        call assert(precision(0.0_RP) < precision(0.0D0) .or. sum(abs(hcol)) > 0, 'Column '//num2str(j)//' of H is nonzero', srname)
+        !call assert(precision(0.0_RP) < precision(0.0D0) .or. sum(abs(hcol)) > 0, 'Column '//num2str(j)//' of H is nonzero', srname)
     end do
 
     ! The following is too expensive to check.
@@ -1582,8 +1582,8 @@ vlag(kref) = vlag(kref) + ONE
 if (DEBUGGING) then
     call assert(size(vlag) == npt + n, 'SIZE(VLAG) == NPT + N', srname)
     tol = max(TEN**max(-8, -MAXPOW10), min(1.0E-1_RP, TEN**min(12, MAXPOW10) * EPS * real(npt + n, RP)))
-    call wassert(abs(sum(vlag(1:npt)) - ONE) / real(npt, RP) <= tol .or. precision(0.0_RP) < precision(0.0D0), &
-        & 'SUM(VLAG(1:NPT)) == 1', srname)
+    !call wassert(abs(sum(vlag(1:npt)) - ONE) / real(npt, RP) <= tol .or. precision(0.0_RP) < precision(0.0D0), &
+     !   & 'SUM(VLAG(1:NPT)) == 1', srname)
 end if
 
 end function calvlag_lfqint

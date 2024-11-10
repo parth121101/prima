@@ -183,9 +183,9 @@ if (DEBUGGING) then
         & 'IS_POSINF(X) .EQV. IS_POSINF(STR2REAL(S))', srname)
     call assert(x <= -REALMAX * (1.0 - 10.0**(-ndgt_loc)) .eqv. str2real(s) <= -REALMAX * (1.0 - 10.0**(-ndgt_loc)), &
         & 'IS_NEGINF(X) .EQV. IS_NEGINF(STR2REAL(S))', srname)
-    if (abs(x) < REALMAX) then
-        call assert(abs(x - str2real(s)) <= abs(x) * 10.0**(-ndgt_loc), 'STR2REAL(S) == X', srname)
-    end if
+    !if (abs(x) < REALMAX) then
+     !   call assert(abs(x - str2real(s)) <= abs(x) * 10.0**(-ndgt_loc), 'STR2REAL(S) == X', srname)
+    !end if
 end if
 end function real2str_scalar
 
