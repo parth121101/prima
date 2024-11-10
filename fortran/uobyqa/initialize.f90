@@ -57,7 +57,6 @@ real(RP), intent(out) :: fval(:)
 real(RP), intent(out) :: xbase(:)   ! XBASE(N)
 real(RP), intent(out) :: xhist(:, :)    ! XHIST(N, MAXXHIST)
 real(RP), intent(out) :: xpt(:, :)  ! XPT(N, NPT)
-real(RP), intent(out) :: xpt_(:, :)  ! XPT(N, NPT)
 
 ! Local variables
 character(len=*), parameter :: solver = 'UOBYQA'
@@ -77,6 +76,8 @@ logical :: evaluated(size(xpt, 2))
 real(RP) :: f
 real(RP) :: x(size(x0))
 real(RP) :: xw(size(x0))
+real(RP) :: xpt_(size(xpt, 1), size(xpt, 2))
+
 
 ! Sizes
 n = int(size(xpt, 1), kind(n))

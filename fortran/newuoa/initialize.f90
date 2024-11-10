@@ -71,13 +71,10 @@ integer(IK), intent(out) :: info
 integer(IK), intent(out) :: kopt
 integer(IK), intent(out) :: nf
 real(RP), intent(out) :: fhist(:)   ! FHIST(MAXFHIST)
-real(RP), intent(out) :: fval(:)    ! FVAL(NPT)
-real(RP), intent(out) :: fval_1(:)  
-real(RP), intent(out) :: fval_2(:)    
+real(RP), intent(out) :: fval(:)    ! FVAL(NPT)   
 real(RP), intent(out) :: xbase(:)   ! XBASE(N)
 real(RP), intent(out) :: xhist(:, :)    ! XHIST(N, MAXXHIST)
 real(RP), intent(out) :: xpt(:, :)  ! XPT(N, NPT)
-real(RP), intent(out) :: xpt_(:, :)  ! XPT(N, NPT)
 
 ! Local variables
 character(len=*), parameter :: solver = 'NEWUOA'
@@ -92,6 +89,9 @@ integer(IK) :: subinfo
 logical :: evaluated(size(fval))
 real(RP) :: f
 real(RP) :: x(size(x0))
+real(RP) :: fval_1(size(fval))  
+real(RP) :: fval_2(size(fval)) 
+real(RP) :: xpt_(size(xpt,1), size(xpt,2))
 integer :: i, col
 integer :: source_col_1, source_col_2
 

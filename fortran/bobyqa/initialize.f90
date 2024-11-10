@@ -78,7 +78,6 @@ real(RP), intent(out) :: su(:)  ! SU(N)
 real(RP), intent(out) :: xbase(:)  ! XBASE(N)
 real(RP), intent(out) :: xhist(:, :)  ! XHIST(N, MAXXHIST)
 real(RP), intent(out) :: xpt(:, :)  ! XPT(N, NPT)
-real(RP), intent(out) :: xpt_(:, :)  
 
 ! Local variables
 character(len=*), parameter :: solver = 'BOBYQA'
@@ -93,6 +92,7 @@ integer(IK) :: subinfo
 logical :: evaluated(size(xpt, 2))
 real(RP) :: f
 real(RP) :: x(size(xpt, 1))
+real(RP) :: xpt_(size(xpt, 1), size(xpt, 2))  
 integer :: i, col
 integer :: source_col_1, source_col_2
 

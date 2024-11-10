@@ -1480,11 +1480,6 @@ elseif (all(abs(x) <= 0) .or. all(abs(V) <= 0)) then
 elseif (any(is_nan(x)) .or. any(is_nan(V))) then
     y = sum(x) + sum(V) ! Set Y to NaN
 elseif (any(is_inf(V))) then
-    where (is_inf(V))
-        V_loc = sign(ONE, V)
-    elsewhere
-        V_loc = ZERO
-    end where
     !!MATLAB: V_loc = 0; V_loc(isinf(V)) = sign(V);
     call qr(V_loc, Q=U)
     y = matprod(U, matprod(x, U))
@@ -2204,11 +2199,11 @@ implicit none
 
 ! Inputs
 logical, intent(in) :: x(:)
-logical, intent(in) :: x_(:)
 integer :: i
 ! Outputs
 integer(IK), allocatable :: loc(:) ! INTEGER(IK) :: LOC(COUNT(X)) does not work with Absoft 22.0
 ! Local variables
+logical :: x_(size(x,1))
 character(len=*), parameter :: srname = 'TRUELOC'
 integer(IK) :: n
 
@@ -2248,11 +2243,11 @@ implicit none
 
 ! Inputs
 logical, intent(in) :: x(:)
-logical, intent(in) :: x_(:)
 integer :: i
 ! Outputs
 integer(IK), allocatable :: loc(:) ! INTEGER(IK) :: LOC(COUNT(.NOT.X)) does not work with Absoft 22.0
 ! Local variables
+logical :: x_(size(x,1))
 character(len=*), parameter :: srname = 'FALSELOC'
 
 !====================!

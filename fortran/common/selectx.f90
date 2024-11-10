@@ -54,7 +54,6 @@ integer(IK), intent(inout) :: nfilt
 real(RP), intent(inout) :: cfilt(:)  ! MAXFILT
 real(RP), intent(inout) :: ffilt(:)  ! MAXFILT
 real(RP), intent(inout) :: xfilt(:, :) ! (N, MAXFILT)
-real(RP), intent(inout) :: xfilt_(:, :) ! (N, MAXFILT)
 real(RP), intent(inout), optional :: confilt(:, :)  ! (M, MAXFILT)
 
 ! Local variables
@@ -71,6 +70,8 @@ real(RP) :: cref
 real(RP) :: fref
 real(RP) :: phi(size(ffilt))
 real(RP) :: phimax
+real(RP) :: xfilt_(size(xfilt,1), size(xfilt,2)) 
+
 
 ! Sizes
 if (present(constr)) then

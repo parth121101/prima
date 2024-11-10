@@ -89,7 +89,6 @@ real(RP), intent(out) :: fval(:)  ! FVAL(NPT)
 real(RP), intent(out) :: xbase(:)  ! XBASE(N)
 real(RP), intent(out) :: xhist(:, :)  ! XHIST(N, MAXXHIST)
 real(RP), intent(out) :: xpt(:, :)  ! XPT(N, NPT)
-real(RP), intent(out) :: xpt_(:, :)  ! XPT(N, NPT)
 
 ! Local variables
 character(len=*), parameter :: solver = 'LINCOA'
@@ -113,6 +112,7 @@ real(RP) :: constr_leq(size(beq))
 real(RP) :: cstrv
 real(RP) :: f
 real(RP) :: x(size(x0))
+real(RP) :: xpt_(size(xpt,1), size(xpt,2)) 
 
 ! Sizes.
 m = int(size(b), kind(m))
