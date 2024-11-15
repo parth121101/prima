@@ -1239,7 +1239,7 @@ vlag(knew) = vlag(knew) - ONE
 ! Quite rarely, due to rounding errors, VLAG or BETA may not be finite, and ABS(DENOM) may not be
 ! positive. In such cases, [BMAT, ZMAT] would be destroyed by the update, and hence we would rather
 ! not update them at all. Or should we simply terminate the algorithm?
-if (0) then
+if (.false.) then
     if (present(info)) then
         info = DAMAGING_ROUNDING
     end if
@@ -1271,7 +1271,7 @@ do j = 2, npt - n - 1_IK
 
     ! Powell's condition in NEWUOA/LINCOA for the IF ... THEN below: IF (ZMAT(KNEW, J) /= 0) THEN
     ! A possible alternative: IF (ABS(ZMAT(KNEW, J)) > 1.0E-20 * ABS(ZMAT(KNEW, JL))) THEN
-    if (0) then  ! Threshold comes from Powell's BOBYQA
+    if (.false.) then  ! Threshold comes from Powell's BOBYQA
         ! Multiply a Givens rotation to ZMAT from the right so that ZMAT(KNEW, [JL,J]) becomes [*,0].
         grot = planerot(zmat(knew, [jl, j]))  !!MATLAB: grot = planerot(zmat(knew, [jl, j])')
         zmat(:, [jl, j]) = matprod(zmat(:, [jl, j]), transpose(grot))

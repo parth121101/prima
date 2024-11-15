@@ -511,7 +511,7 @@ do uphill = 0, 1
     s = ZERO
     mask_free = (min(xopt - sl, glag) > 0 .or. max(xopt - su, glag) < 0)
     s(trueloc(mask_free)) = bigstp
-    ggfree = sum(glag(trueloc(mask_free))**2)
+    !ggfree = sum(glag(trueloc(mask_free))**2)
     ! In Powell's code, the subroutine returns immediately if GGFREE is 0. However, GGFREE depends
     ! on GLAG, which in turn depends on UPHILL. It can happen that GGFREE is 0 when UPHILL = 0 but
     ! not so when UPHILL= 1. Thus we skip the iteration for the current UPHILL but do not return.
@@ -536,10 +536,10 @@ do uphill = 0, 1
         mask_fixl = (s >= bigstp .and. xtemp <= sl)  ! S == BIGSTP & XTEMP == SL
         mask_fixu = (s >= bigstp .and. xtemp >= su)  ! S == BIGSTP & XTEMP == SU
         mask_free = (s >= bigstp .and. .not. (mask_fixl .or. mask_fixu))
-        s(trueloc(mask_fixl)) = sl(trueloc(mask_fixl)) - xopt(trueloc(mask_fixl))
-        s(trueloc(mask_fixu)) = su(trueloc(mask_fixu)) - xopt(trueloc(mask_fixu))
-        sfixsq = sfixsq + sum(s(trueloc(mask_fixl .or. mask_fixu))**2)
-        ggfree = sum(glag(trueloc(mask_free))**2)
+        !s(trueloc(mask_fixl)) = sl(trueloc(mask_fixl)) - xopt(trueloc(mask_fixl))
+        !s(trueloc(mask_fixu)) = su(trueloc(mask_fixu)) - xopt(trueloc(mask_fixu))
+        !sfixsq = sfixsq + sum(s(trueloc(mask_fixl .or. mask_fixu))**2)
+        !ggfree = sum(glag(trueloc(mask_free))**2)
         if (.not. (sfixsq > ssqsav .and. ggfree > 0)) then
             exit
         end if
@@ -588,7 +588,7 @@ end if
 
 ! In case D is zero or contains Inf/NaN, replace it with a displacement from XPT(:, KNEW) to
 ! XOPT. Powell's code does not have this.
-if (1) then
+if (.true.) then
     d = xpt(:, knew) - xopt
     scaling = delbar / norm(d)
     d = max(0.6_RP * scaling, min(HALF, scaling)) * d

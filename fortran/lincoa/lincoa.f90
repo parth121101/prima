@@ -656,9 +656,7 @@ implicit none
 
 ! Inputs
 real(RP), intent(in) :: Aeq(:, :)
-real(RP), intent(in) :: Aeq_(size(Aeq, 1), size(Aeq, 2))
 real(RP), intent(in) :: Aineq(:, :)
-real(RP), intent(in) :: Aineq_(size(Aineq, 1), size(Aineq, 2))
 real(RP), intent(in) :: beq(:)
 real(RP), intent(in) :: bineq(:)
 real(RP), intent(in) :: rhoend
@@ -671,6 +669,8 @@ real(RP), intent(out), allocatable :: amat(:, :)
 real(RP), intent(out), allocatable :: bvec(:)
 
 ! Local variables
+real(RP) :: Aeq_(size(Aeq, 1), size(Aeq, 2))
+real(RP) :: Aineq_(size(Aineq, 1), size(Aineq, 2))
 character(len=*), parameter :: solver = 'LINCOA'
 character(len=*), parameter :: srname = 'GET_LINCON'
 integer(IK) :: m
