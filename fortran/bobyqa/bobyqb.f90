@@ -223,7 +223,7 @@ call initxf(calfun, iprint, maxfun, ftarget, rhobeg, xl, xu, x, ij, kopt, nf, fh
 ! Report the current best value, and check if user asks for early termination.
 terminate = .false.
 if (present(callback_fcn)) then
-    call callback_fcn(xbase + xpt(:, kopt), fval(kopt), nf, 0_IK, terminate=terminate)
+    !call callback_fcn(xbase + xpt(:, kopt), fval(kopt), nf, 0_IK, terminate=terminate)
     if (terminate) then
         subinfo = CALLBACK_TERMINATE
     end if
@@ -636,7 +636,7 @@ do tr = 1, maxtr
 
     ! Report the current best value, and check if user asks for early termination.
     if (present(callback_fcn)) then
-        call callback_fcn(xbase + xpt(:, kopt), fval(kopt), nf, tr, terminate=terminate)
+        !call callback_fcn(xbase + xpt(:, kopt), fval(kopt), nf, tr, terminate=terminate)
         if (terminate) then
             info = CALLBACK_TERMINATE
             exit
