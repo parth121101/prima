@@ -136,12 +136,12 @@ bmat(:, npt + 1:npt + n) = bmat(:, npt + 1:npt + n) + (bymat + transpose(bymat))
 yzmat = matprod(ymat, zmat)
 yzmat_c = yzmat
 yzmat_c(:, 1:idz_loc - 1) = -yzmat(:, 1:idz_loc - 1)  ! IDZ_LOC is usually small. So this assignment is cheap.
-bmat(:, npt + 1:npt + n) = bmat(:, npt + 1:npt + n) + matprod(yzmat, transpose(yzmat_c))
+!bmat(:, npt + 1:npt + n) = bmat(:, npt + 1:npt + n) + matprod(yzmat, transpose(yzmat_c))
 !bmat(:, 1:npt) = bmat(:, 1:npt) + matprod(yzmat_c, transpose(zmat))
 
 ! Update the quadratic model. Note that PQ remains unchanged. For HQ, see (7.14) of the NEWUOA paper.
 !v = matprod(xptxav, pq)  ! Vector V in (7.14) of the NEWUOA paper
-v = matprod(xpt, pq) - HALF * sum(pq) * xopt ! This one seems to work better numerically.
+!v = matprod(xpt, pq) - HALF * sum(pq) * xopt ! This one seems to work better numerically.
 vxopt = outprod(v, xopt)  !!MATLAB: vxopt = v * xopt';  % v and xopt should be both columns
 hq = (vxopt + transpose(vxopt)) + hq !call r2update(hq, ONE, xopt, v)
 !call symmetrize(hq)  ! Do this if the update above does not ensure symmetry.
