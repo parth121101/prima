@@ -67,7 +67,6 @@ module infnan_mod
 !--------------------------------------------------------------------------------------------------!
 
 use, non_intrinsic :: huge_mod, only : huge_value
-use, non_intrinsic :: inf_mod, only : is_finite, is_inf, is_posinf, is_neginf
 implicit none
 private
 public :: is_finite, is_posinf, is_neginf, is_inf, is_nan
@@ -75,6 +74,63 @@ public :: is_finite, is_posinf, is_neginf, is_inf, is_nan
 interface is_nan
     module procedure is_nan_sp, is_nan_dp
 end interface is_nan
+interface is_finite
+    module procedure is_finite_sp, is_finite_dp
+end interface is_finite
+
+interface is_posinf
+    module procedure is_posinf_sp, is_posinf_dp
+end interface is_posinf
+
+interface is_neginf
+    module procedure is_neginf_sp, is_neginf_dp
+end interface is_neginf
+
+interface is_inf
+    module procedure is_inf_sp, is_inf_dp
+end interface is_inf
+
+
+#if PRIMA_HP_AVAILABLE == 1
+
+interface is_finite
+    module procedure is_finite_hp
+end interface is_finite
+
+interface is_posinf
+    module procedure is_posinf_hp
+end interface is_posinf
+
+interface is_neginf
+    module procedure is_neginf_hp
+end interface is_neginf
+
+interface is_inf
+    module procedure is_inf_hp
+end interface is_inf
+
+#endif
+
+
+#if PRIMA_QP_AVAILABLE == 1
+
+interface is_finite
+    module procedure is_finite_qp
+end interface is_finite
+
+interface is_posinf
+    module procedure is_posinf_qp
+end interface is_posinf
+
+interface is_neginf
+    module procedure is_neginf_qp
+end interface is_neginf
+
+interface is_inf
+    module procedure is_inf_qp
+end interface is_inf
+
+#endif
 
 
 #if PRIMA_HP_AVAILABLE == 1
@@ -94,6 +150,69 @@ end interface is_nan
 
 contains
 
+pure elemental function is_finite_sp(x) result(y)
+use, non_intrinsic :: consts_mod, only : SP
+implicit none
+real(SP), intent(in) :: x
+logical :: y
+y = (x <= huge_value(x) .and. x >= -huge_value(x))
+end function is_finite_sp
+
+pure elemental function is_finite_dp(x) result(y)
+use, non_intrinsic :: consts_mod, only : DP
+implicit none
+real(DP), intent(in) :: x
+logical :: y
+y = (x <= huge_value(x) .and. x >= -huge_value(x))
+end function is_finite_dp
+
+pure elemental function is_posinf_sp(x) result(y)
+use, non_intrinsic :: consts_mod, only : SP
+implicit none
+real(SP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x)) .and. (x > 0)
+end function is_posinf_sp
+
+pure elemental function is_posinf_dp(x) result(y)
+use, non_intrinsic :: consts_mod, only : DP
+implicit none
+real(DP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x)) .and. (x > 0)
+end function is_posinf_dp
+
+pure elemental function is_neginf_sp(x) result(y)
+use, non_intrinsic :: consts_mod, only : SP
+implicit none
+real(SP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x)) .and. (x < 0)
+end function is_neginf_sp
+
+pure elemental function is_neginf_dp(x) result(y)
+use, non_intrinsic :: consts_mod, only : DP
+implicit none
+real(DP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x)) .and. (x < 0)
+end function is_neginf_dp
+
+pure elemental function is_inf_sp(x) result(y)
+use, non_intrinsic :: consts_mod, only : SP
+implicit none
+real(SP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x))
+end function is_inf_sp
+
+pure elemental function is_inf_dp(x) result(y)
+use, non_intrinsic :: consts_mod, only : DP
+implicit none
+real(DP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x))
+end function is_inf_dp
 
 pure elemental function is_nan_sp(x) result(y)
 use, non_intrinsic :: consts_mod, only : SP
@@ -117,6 +236,78 @@ y = ((.not. is_finite(x)) .and. (.not. is_inf(x)))
 y = ((.not. is_inf(x)) .and. (.not. (x <= huge_value(x) .and. x >= -huge_value(x)))) .or. y
 end function is_nan_dp
 
+
+
+#if PRIMA_HP_AVAILABLE == 1
+
+pure elemental function is_finite_hp(x) result(y)
+use, non_intrinsic :: consts_mod, only : HP
+implicit none
+real(HP), intent(in) :: x
+logical :: y
+y = (x <= huge_value(x) .and. x >= -huge_value(x))
+end function is_finite_hp
+
+pure elemental function is_posinf_hp(x) result(y)
+use, non_intrinsic :: consts_mod, only : HP
+implicit none
+real(HP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x)) .and. (x > 0)
+end function is_posinf_hp
+
+pure elemental function is_neginf_hp(x) result(y)
+use, non_intrinsic :: consts_mod, only : HP
+implicit none
+real(HP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x)) .and. (x < 0)
+end function is_neginf_hp
+
+pure elemental function is_inf_hp(x) result(y)
+use, non_intrinsic :: consts_mod, only : HP
+implicit none
+real(HP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x))
+end function is_inf_hp
+
+#endif
+
+
+#if PRIMA_QP_AVAILABLE == 1
+pure elemental function is_finite_qp(x) result(y)
+use, non_intrinsic :: consts_mod, only : QP
+implicit none
+real(QP), intent(in) :: x
+logical :: y
+y = (x <= huge_value(x) .and. x >= -huge_value(x))
+end function is_finite_qp
+
+pure elemental function is_posinf_qp(x) result(y)
+use, non_intrinsic :: consts_mod, only : QP
+implicit none
+real(QP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x)) .and. (x > 0)
+end function is_posinf_qp
+
+pure elemental function is_neginf_qp(x) result(y)
+use, non_intrinsic :: consts_mod, only : QP
+implicit none
+real(QP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x)) .and. (x < 0)
+end function is_neginf_qp
+
+pure elemental function is_inf_qp(x) result(y)
+use, non_intrinsic :: consts_mod, only : QP
+implicit none
+real(QP), intent(in) :: x
+logical :: y
+y = (abs(x) > huge_value(x))
+end function is_inf_qp
+#endif
 
 #if PRIMA_HP_AVAILABLE == 1
 
