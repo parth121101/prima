@@ -199,7 +199,7 @@ crvmin = -REALMAX
 
 ! GNEW is the gradient at the current iterate.
 gnew = gopt
-gredsq = sum(gnew(trueloc(xbdi == 0))**2)
+!gredsq = sum(gnew(trueloc(xbdi == 0))**2)
 ! DELSQ is the upper bound on the sum of squares of the free variables.
 delsq = delta * delta
 ! QRED is the reduction in Q so far.
@@ -221,7 +221,7 @@ twod_search = .false.  ! The default value of TWOD_SEARCH is FALSE!
 ! approximate solution to the subproblem (1.8), even if there are hundreds of variables."
 maxiter = int(min(10**min(4, range(0_IK)), int(n - nact)**2), IK)
 do iter = 1, maxiter
-    resid = delsq - sum(d(trueloc(xbdi == 0))**2)
+    !resid = delsq - sum(d(trueloc(xbdi == 0))**2)
     if (resid <= 0) then
         twod_search = .true.
         exit
@@ -348,7 +348,7 @@ do iter = 1, maxiter
         end if
         ggsav = gredsq
         gnew = gnew + stplen * hs
-        gredsq = sum(gnew(trueloc(xbdi == 0))**2)
+        !gredsq = sum(gnew(trueloc(xbdi == 0))**2)
         dold = d
         d = d + stplen * s
 
@@ -380,7 +380,7 @@ do iter = 1, maxiter
         end if
         beta = ZERO
         itercg = 0
-        gredsq = sum(gnew(trueloc(xbdi == 0))**2)
+        !gredsq = sum(gnew(trueloc(xbdi == 0))**2)
     elseif (stplen < bstep) then
         ! Either apply another conjugate gradient iteration or exit.
         ! N.B. ITERCG > N - NACT is impossible.
@@ -434,10 +434,10 @@ do iter = 1, maxiter
     end if
 
     ! Update GREDSQ, DREDG, DREDSQ.
-    gredsq = sum(gnew(trueloc(xbdi == 0))**2)
-    dredg = inprod(d(trueloc(xbdi == 0)), gnew(trueloc(xbdi == 0)))
+    !gredsq = sum(gnew(trueloc(xbdi == 0))**2)
+    !dredg = inprod(d(trueloc(xbdi == 0)), gnew(trueloc(xbdi == 0)))
     if (iter == 1 .or. nact > nactsav) then
-        dredsq = sum(d(trueloc(xbdi == 0))**2) ! In theory, DREDSQ changes only when NACT increases.
+        !dredsq = sum(d(trueloc(xbdi == 0))**2) ! In theory, DREDSQ changes only when NACT increases.
         dred = d
         dred(trueloc(xbdi /= 0)) = ZERO
         hdred = hess_mul(dred, xpt, pq, hq)
