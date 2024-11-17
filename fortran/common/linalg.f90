@@ -358,7 +358,7 @@ do j = 1, int(size(y, 2), kind(j))
     ! When interfaced with MATLAB, the following seems more efficient than a loop, which is strange
     ! since inprod itself is implemented by a loop. This may depend on the machine (e.g., cache
     ! size), compiler, compiling options, and MATLAB version.
-    z(j) = inprod(x, y(:, j))
+    !z(j) = inprod(x, y(:, j))
 end do
 
 !====================!
