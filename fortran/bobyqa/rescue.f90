@@ -512,7 +512,7 @@ if (nprov > 0) then
         nf = nf + 1_IK
 
         ! Print a message about the function evaluation according to IPRINT.
-        call fmsg(solver, 'Rescue', iprint, nf, delta, f, x)
+        !call fmsg(solver, 'Rescue', iprint, nf, delta, f, x)
         ! Save X, F into the history.
         call savehist(nf, x, xhist, f, fhist)
 

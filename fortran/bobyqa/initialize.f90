@@ -202,7 +202,7 @@ do k = 1, min(npt, int(2 * n + 1, kind(npt)))
     call evaluate(calfun, x, f)
 
     ! Print a message about the function evaluation according to IPRINT.
-    call fmsg(solver, 'Initialization', iprint, k, rhobeg, f, x)
+    !call fmsg(solver, 'Initialization', iprint, k, rhobeg, f, x)
     ! Save X, F into the history.
     call savehist(k, x, xhist, f, fhist)
 
@@ -260,7 +260,7 @@ if (info == INFO_DFT) then
         call evaluate(calfun, x, f)
 
         ! Print a message about the function evaluation according to IPRINT.
-        call fmsg(solver, 'Initialization', iprint, k, rhobeg, f, x)
+        !call fmsg(solver, 'Initialization', iprint, k, rhobeg, f, x)
         ! Save X, F into the history.
         call savehist(k, x, xhist, f, fhist)
 

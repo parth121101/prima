@@ -253,7 +253,7 @@ if (subinfo /= INFO_DFT) then
     ! Arrange FHIST and XHIST so that they are in the chronological order.
     call rangehist(nf, xhist, fhist)
     ! Print a return message according to IPRINT.
-    call retmsg(solver, info, iprint, nf, f, x)
+    !call retmsg(solver, info, iprint, nf, f, x)
     ! Postconditions
     if (DEBUGGING) then
         call assert(nf <= maxfun, 'NF <= MAXFUN', srname)
@@ -357,7 +357,7 @@ do tr = 1, maxtr
         rescued = .false.  ! Set RESCUED to FALSE after evaluating F at a new point.
 
         ! Print a message about the function evaluation according to IPRINT.
-        call fmsg(solver, 'Trust region', iprint, nf, delta, f, x)
+        !call fmsg(solver, 'Trust region', iprint, nf, delta, f, x)
         ! Save X, F into the history.
         call savehist(nf, x, xhist, f, fhist)
 
@@ -565,7 +565,7 @@ do tr = 1, maxtr
             rescued = .false.  ! Set RESCUED to FALSE after evaluating F at a new point.
 
             ! Print a message about the function evaluation according to IPRINT.
-            call fmsg(solver, 'Geometry', iprint, nf, delbar, f, x)
+            !call fmsg(solver, 'Geometry', iprint, nf, delbar, f, x)
             ! Save X, F into the history.
             call savehist(nf, x, xhist, f, fhist)
 
@@ -614,7 +614,7 @@ do tr = 1, maxtr
         delta = max(HALF * rho, redrho(rho, rhoend))
         rho = redrho(rho, rhoend)
         ! Print a message about the reduction of RHO according to IPRINT.
-        call rhomsg(solver, iprint, nf, delta, fval(kopt), rho, xbase + xpt(:, kopt))
+        !call rhomsg(solver, iprint, nf, delta, fval(kopt), rho, xbase + xpt(:, kopt))
         ! DNORM_REC and MODERR_REC are corresponding to the recent function evaluations with
         ! the current RHO. Update them after reducing RHO.
         dnorm_rec = REALMAX
@@ -652,7 +652,7 @@ if (info == SMALL_TR_RADIUS .and. shortd .and. dnorm > TENTH * rhoend .and. nf <
     nf = nf + 1_IK
     ! Print a message about the function evaluation according to IPRINT.
     ! Zaikun 20230512: DELTA has been updated. RHO is only indicative here. TO BE IMPROVED.
-    call fmsg(solver, 'Trust region', iprint, nf, rho, f, x)
+    !call fmsg(solver, 'Trust region', iprint, nf, rho, f, x)
     ! Save X, F into the history.
     call savehist(nf, x, xhist, f, fhist)
 end if
@@ -667,7 +667,7 @@ end if
 call rangehist(nf, xhist, fhist)
 
 ! Print a return message according to IPRINT.
-call retmsg(solver, info, iprint, nf, f, x)
+!call retmsg(solver, info, iprint, nf, f, x)
 
 !====================!
 !  Calculation ends  !
