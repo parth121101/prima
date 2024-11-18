@@ -100,6 +100,12 @@ end do
 y = max(-CONSTRMAX, min(CONSTRMAX, y))
 end function moderatec
 
+subroutine OBJ(x, f)
+    use consts_mod, only : RP
+    implicit none
+    real(RP), intent(in) :: x(:)
+    real(RP), intent(out) :: f
+end subroutine OBJ
 
 subroutine evaluatef(calfun, x, f)
 !--------------------------------------------------------------------------------------------------!
@@ -110,7 +116,6 @@ subroutine evaluatef(calfun, x, f)
 use, non_intrinsic :: consts_mod, only : RP, DEBUGGING
 use, non_intrinsic :: debug_mod, only : assert
 use, non_intrinsic :: infnan_mod, only : is_nan, is_posinf
-use, non_intrinsic :: pintrf_mod, only : OBJ
 implicit none
 
 ! Inputs
