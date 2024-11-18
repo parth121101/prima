@@ -1566,7 +1566,7 @@ wcheck = matprod(d, xpt)
 wcheck = wcheck * (HALF * wcheck + matprod(xref, xpt))
 
 ! The following two lines set VLAG to H*(w-v).
-vlag(1:npt) = omega_mul(idz_loc, zmat, wcheck) + matprod(d, bmat(:, 1:npt))
+!vlag(1:npt) = omega_mul(idz_loc, zmat, wcheck) + matprod(d, bmat(:, 1:npt))
 vlag(npt + 1:npt + n) = matprod(bmat, [wcheck, d])
 ! The following line is equivalent to the above one, but handles WCHECK and D separately.
 ! !vlag(npt + 1:npt + n) = matprod(bmat(:, 1:npt), wcheck) + matprod(bmat(:, npt + 1:npt + n), d)
@@ -1670,7 +1670,7 @@ wcheck = wcheck * (HALF * wcheck + matprod(xref, xpt))
 ! WMV is the vector (w-v) for w and v in (4.10) and (4.24) of the NEWUOA paper.
 wmv = [wcheck, d]
 ! The following two lines set VLAG to H*(w-v).
-vlag(1:npt) = omega_mul(idz_loc, zmat, wcheck) + matprod(d, bmat(:, 1:npt))
+!vlag(1:npt) = omega_mul(idz_loc, zmat, wcheck) + matprod(d, bmat(:, 1:npt))
 vlag(npt + 1:npt + n) = matprod(bmat, wmv)
 ! The following line is equivalent to the above one, but handles WCHECK and D separately.
 ! !VLAG(NPT + 1:NPT + N) = MATPROD(BMAT(:, 1:NPT), WCHECK) + MATPROD(BMAT(:, NPT + 1:NPT + N), D)
@@ -1680,7 +1680,7 @@ vlag(npt + 1:npt + n) = matprod(bmat, wmv)
 dxref = inprod(d, xref)
 dsq = inprod(d, d)
 xrefsq = inprod(xref, xref)
-dvlag = inprod(d, vlag(npt + 1:npt + n))
+!dvlag = inprod(d, vlag(npt + 1:npt + n))
 wvlag = inprod(wcheck, vlag(1:npt))
 beta = dxref**2 + dsq * (xrefsq + dxref + dxref + HALF * dsq) - dvlag - wvlag
 !---------------------------------------------------------------------------------------------------!
