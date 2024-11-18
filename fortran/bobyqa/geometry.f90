@@ -140,7 +140,7 @@ if (.not. ximproved) then
 end if
 
 ! SCORE(K) = NaN implies DEN(K) = NaN. We exclude such K as we want DEN to be big.
-score(trueloc(is_nan(score))) = -ONE
+!score(trueloc(is_nan(score))) = -ONE
 
 knew = 0
 ! The following IF works slightly better than `IF (ANY(SCORE > 0))` from Powell's BOBYQA/LINCOA code.
@@ -374,8 +374,8 @@ do k = 1, npt
 
     ! First, revise SLBD. Note that SLBD_TEST <= 0 unless the input violates XOPT >= SL.
     slbd_test = slbd
-    slbd_test(trueloc(xdiff > 0)) = lfrac(trueloc(xdiff > 0))
-    slbd_test(trueloc(xdiff < 0)) = ufrac(trueloc(xdiff < 0))
+    !slbd_test(trueloc(xdiff > 0)) = lfrac(trueloc(xdiff > 0))
+    !slbd_test(trueloc(xdiff < 0)) = ufrac(trueloc(xdiff < 0))
     if (any(slbd_test > slbd)) then
         ilbd = int(maxloc(slbd_test, mask=(.not. is_nan(slbd_test)), dim=1), kind(ilbd))
         slbd = slbd_test(ilbd)
@@ -387,8 +387,8 @@ do k = 1, npt
 
     ! Second, revise SUBD. Note that SUBD_TEST >= 0 unless the input violates XOPT <= SU.
     subd_test = subd
-    subd_test(trueloc(xdiff > 0)) = ufrac(trueloc(xdiff > 0))
-    subd_test(trueloc(xdiff < 0)) = lfrac(trueloc(xdiff < 0))
+    !subd_test(trueloc(xdiff > 0)) = ufrac(trueloc(xdiff > 0))
+    !subd_test(trueloc(xdiff < 0)) = lfrac(trueloc(xdiff < 0))
     if (any(subd_test < subd)) then
         iubd = int(minloc(subd_test, mask=(.not. is_nan(subd_test)), dim=1), kind(iubd))
         subd = max(sumin, subd_test(iubd))
@@ -510,7 +510,7 @@ do uphill = 0, 1
     end if
     s = ZERO
     mask_free = (min(xopt - sl, glag) > 0 .or. max(xopt - su, glag) < 0)
-    s(trueloc(mask_free)) = bigstp
+    !s(trueloc(mask_free)) = bigstp
     !ggfree = sum(glag(trueloc(mask_free))**2)
     ! In Powell's code, the subroutine returns immediately if GGFREE is 0. However, GGFREE depends
     ! on GLAG, which in turn depends on UPHILL. It can happen that GGFREE is 0 when UPHILL = 0 but
@@ -546,12 +546,12 @@ do uphill = 0, 1
     end do
 
     ! Set the remaining free components of S and all components of XCAUCHY. S may be scaled later.
-    x(trueloc(glag > 0)) = sl(trueloc(glag > 0))
-    x(trueloc(glag <= 0)) = su(trueloc(glag <= 0))
+    !x(trueloc(glag > 0)) = sl(trueloc(glag > 0))
+    !x(trueloc(glag <= 0)) = su(trueloc(glag <= 0))
     !x(trueloc(abs(s) <= 0)) = xopt(trueloc(abs(s) <= 0))
     xtemp = max(sl, min(su, xopt - grdstp * glag))
-    x(trueloc(s >= bigstp)) = xtemp(trueloc(s >= bigstp))  ! S == BIGSTP
-    s(trueloc(s >= bigstp)) = -grdstp * glag(trueloc(s >= bigstp))  ! S == BIGSTP
+    !x(trueloc(s >= bigstp)) = xtemp(trueloc(s >= bigstp))  ! S == BIGSTP
+    !s(trueloc(s >= bigstp)) = -grdstp * glag(trueloc(s >= bigstp))  ! S == BIGSTP
     gs = inprod(glag, s)
 
     ! Set CURV to the curvature of the KNEW-th Lagrange function along S. Scale S by a factor less

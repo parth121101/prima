@@ -1417,7 +1417,7 @@ elseif (any(is_nan(x)) .or. any(is_nan(v))) then
     y = sum(x) + sum(v) ! Set Y to NaN
 elseif (any(is_inf(v))) then
     u = ZERO
-    u(trueloc(is_inf(v))) = sign(ONE, v(trueloc(is_inf(v))))
+    !u(trueloc(is_inf(v))) = sign(ONE, v(trueloc(is_inf(v))))
     !!MATLAB: u = 0; u(isinf(v)) = sign(v(isinf(v)))
     u = u / norm(u)
     y = inprod(x, u) * u
@@ -2047,6 +2047,7 @@ integer(IK), intent(in) :: x(:)
 character(len=*), intent(in), optional :: direction
 ! Outputs
 integer(IK) :: y(size(x))
+integer(IK) :: y_(size(x))
 ! Local variables
 character(len=*), parameter :: srname = 'SORT_I1'
 
@@ -2067,12 +2068,15 @@ if (present(direction)) then
 end if
 
 y = x
+y_ = y
 n = int(size(y), kind(n))
 do while (n > 1) ! Bubble sort.
     newn = 0
     do i = 2, n
         if ((y(i - 1) > y(i) .and. ascending) .or. (y(i - 1) < y(i) .and. .not. ascending)) then
-            y([i - 1_IK, i]) = y([i, i - 1_IK])
+            y(i - 1_IK) = y_(i)
+            y(i) = y_(i - 1_IK)
+            y_ = y
             newn = i
         end if
     end do

@@ -93,6 +93,7 @@ logical :: evaluated(size(xpt, 2))
 real(RP) :: f
 real(RP) :: x(size(xpt, 1))
 real(RP) :: xpt_(size(xpt, 1), size(xpt, 2))  
+real(RP) :: fval_(size(fval)) 
 integer :: i, col
 integer :: source_col_1, source_col_2
 
@@ -228,10 +229,14 @@ end do
 ! 2. The initialization of NEWUOA revises IJ (see below) instead of XPT and FVAL. Theoretically, it
 ! is equivalent; practically, after XPT is revised, the initialization of the quadratic model and
 ! the Lagrange polynomials also needs revision, as, e.g., XPT(:, 2:N) is not RHOBEG*EYE(N) anymore.
+fval_ = fval
+xpt_ = xpt
 do k = 2, min(npt - n, int(n + 1, kind(npt)))
     if (xpt(k - 1, k) * xpt(k - 1, k + n) < 0 .and. fval(k + n) < fval(k)) then
-        fval([k, k + n]) = fval([k + n, k])
-        xpt(:, [k, k + n]) = xpt(:, [k + n, k])
+        fval(k) = fval_(k + n)
+        fval(k + n) = fval_(k)
+        xpt(:, k) = xpt_(:, n + k)
+        xpt(:, k + n) = xpt_(:, k)
         ! Indeed, only XPT(K-1, [K, K+N]) needs switching, as the other entries are zero.
     end if
 end do

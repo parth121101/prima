@@ -174,6 +174,8 @@ real(RP) :: sfrac
 real(RP) :: temp
 real(RP) :: v(size(xpt, 1))
 real(RP) :: vlag(size(xpt, 1) + size(xpt, 2))
+real(RP) :: bmat_(size(bmat,1), size(bmat,2))  
+real(RP) :: zmat_(size(zmat,1), size(zmat,2))  
 real(RP) :: vquad
 real(RP) :: wmv(size(xpt, 1) + size(xpt, 2))
 real(RP) :: x(size(xpt, 1))
@@ -255,9 +257,9 @@ call r2update(hq, ONE, xopt, v)
 ptsaux(1, :) = min(delta, su)
 ptsaux(2, :) = max(-delta, sl)
 mask = (ptsaux(1, :) + ptsaux(2, :) < 0)
-ptsaux([1, 2], trueloc(mask)) = ptsaux([2, 1], trueloc(mask))
+!ptsaux([1, 2], trueloc(mask)) = ptsaux([2, 1], trueloc(mask))
 mask = (abs(ptsaux(2, :)) < HALF * abs(ptsaux(1, :)))
-ptsaux(2, trueloc(mask)) = HALF * ptsaux(1, trueloc(mask))
+!ptsaux(2, trueloc(mask)) = HALF * ptsaux(1, trueloc(mask))
 
 ! Set the identifiers of the artificial interpolation points that are along a coordinate direction
 ! from XOPT, and set the corresponding nonzero elements of BMAT and ZMAT.
@@ -290,16 +292,22 @@ do k = 2_IK * n + 2_IK, npt
     iq = ij(2, k - 2 * n - 1)
     ptsid(k) = real(ip, RP) + real(iq, RP) / real(n + 1, RP) + sfrac
     temp = ONE / (ptsaux(1, ip) * ptsaux(1, iq))
-    zmat([1_IK, k], k - n - 1) = temp
-    zmat([ip + 1, iq + 1], k - n - 1) = -temp
+    zmat(1_IK, k - n - 1) = temp
+    zmat(k, k - n - 1) = temp
+    zmat(ip + 1, k - n - 1) = -temp
+    zmat(iq + 1, k - n - 1) = -temp
 end do
 
 ! Update BMAT, ZMAT, ans PTSID so that the 1st and the KOPT-th provisional points are exchanged.
 ! After the exchanging, the KOPT-th point in the provisional set becomes the zero vector, which is
 ! exactly the KOPT-th original point (after the shift of XBASE at the beginning of the subroutine).
 if (kopt /= 1) then
-    bmat(:, [1_IK, kopt]) = bmat(:, [kopt, 1_IK])
-    zmat([1_IK, kopt], :) = zmat([kopt, 1_IK], :)
+    bmat_ = bmat
+    zmat_ = zmat
+    bmat(:, 1_IK) = bmat_(:, kopt)
+    bmat(:, kopt) = bmat_(:, 1_IK)
+    zmat(1_IK, :) = zmat_(kopt, :)
+    zmat(kopt, :) = zmat_(1_IK, :)
 end if
 ptsid(1) = ptsid(kopt)
 ptsid(kopt) = ZERO
@@ -394,8 +402,8 @@ do iter = 1, maxiter
     ! For all K with PTSID(K) > 0, calculate the denominator DEN(K) = SIGMA in the updating formula
     ! of H for XPT(:, KORIG) to replace XPT_PROV(:, K).
     den = ZERO
-    hdiag(trueloc(ptsid > 0)) = sum(zmat(trueloc(ptsid > 0), :)**2, dim=2)
-    den(trueloc(ptsid > 0)) = hdiag(trueloc(ptsid > 0)) * beta + vlag(trueloc(ptsid > 0))**2
+    !hdiag(trueloc(ptsid > 0)) = sum(zmat(trueloc(ptsid > 0), :)**2, dim=2)
+    !den(trueloc(ptsid > 0)) = hdiag(trueloc(ptsid > 0)) * beta + vlag(trueloc(ptsid > 0))**2
 
     ! Attempt setting KPROV to the index of the provisional point to be replaced with the KORIG-th
     ! original interpolation point. We choose KPROV by maximizing DEN(KPROV), which will be the
@@ -427,9 +435,12 @@ do iter = 1, maxiter
     ! Update BMAT, ZMAT, VLAG, and PTSID to exchange the KPROV-th and KORIG-th provisional points.
     ! After the exchanging, the KORIG-th original point will replace the KORIG-th provisional point.
     if (kprov /= korig) then
-        bmat(:, [kprov, korig]) = bmat(:, [korig, kprov])
-        zmat([kprov, korig], :) = zmat([korig, kprov], :)
-        vlag([kprov, korig]) = vlag([korig, kprov])
+        bmat_ = bmat
+        bmat(:, kprov) = bmat_(:, korig)
+        bmat(:, korig) = bmat_(:, kprov)
+        zmat(kprov, :) = zmat_(korig, :)
+        zmat(korig, :) = zmat_(kprov, :)
+        !vlag([kprov, korig]) = vlag([korig, kprov])
     end if
     ptsid(kprov) = ptsid(korig)
 
@@ -551,7 +562,7 @@ if (nprov > 0) then
         moderr = f - vquad
         gopt = gopt + moderr * bmat(:, kpt)
         pqinc = moderr * matprod(zmat, zmat(kpt, :))
-        pq(trueloc(ptsid <= 0)) = pq(trueloc(ptsid <= 0)) + pqinc(trueloc(ptsid <= 0))
+        !pq(trueloc(ptsid <= 0)) = pq(trueloc(ptsid <= 0)) + pqinc(trueloc(ptsid <= 0))
         do k = 1, npt
             if (ptsid(k) <= 0) then
                 cycle

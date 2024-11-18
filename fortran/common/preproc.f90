@@ -74,10 +74,13 @@ character(len=:), allocatable :: min_maxfun_str
 integer :: min_maxfun  ! INTEGER(IK) may overflow if IK corresponds to the 16-bit integer.
 integer :: unit_memo  ! INTEGER(IK) may overflow if IK corresponds to the 16-bit integer.
 integer(IK) :: m_loc
+integer(IK) :: i
 integer(IK) :: maxfilt_in
 logical :: is_constrained_loc
 logical :: lbx(n)
+integer :: lbx_(n)
 logical :: ubx(n)
+integer :: ubx_(n)
 real(RP) :: rhobeg_default
 real(RP) :: rhobeg_old
 real(RP) :: rhoend_default
@@ -339,9 +342,13 @@ if (lower(solver) == 'bobyqa') then
     rhobeg_old = rhobeg
     lbx = (is_finite(xl) .and. x0 - xl <= EPS * max(ONE, abs(xl))) ! X0 essentially equals XL
     ubx = (is_finite(xu) .and. x0 - xu >= -EPS * max(ONE, abs(xu))) ! X0 essentially equals XU
-    x0(trueloc(lbx)) = xl(trueloc(lbx))
-    x0(trueloc(ubx)) = xu(trueloc(ubx))
-    rhobeg = max(EPS, minval([rhobeg, x0(falseloc(lbx)) - xl(falseloc(lbx)), xu(falseloc(ubx)) - x0(falseloc(ubx))]))
+    lbx_ = trueloc(lbx)
+    ubx_ = trueloc(ubx)
+    do i = 1, size(lbx)
+        x0(lbx_(i)) = xl(lbx_(i))
+        x0(ubx_(i)) = xu(ubx_(i))
+    end do
+    !rhobeg = max(EPS, minval([rhobeg, x0(falseloc(lbx)) - xl(falseloc(lbx)), xu(falseloc(ubx)) - x0(falseloc(ubx))]))
     if (rhobeg_old - rhobeg > EPS * max(ONE, rhobeg_old)) then
         rhoend = max(EPS, min((rhoend / rhobeg_old) * rhobeg, rhoend)) ! We do not revise RHOEND unless RHOBEG is truly revised.
         if (has_rhobeg) then

@@ -189,8 +189,8 @@ ggsav = ZERO
 ! value at XOPT. Thus XBDI(I) shows whether or not to fix the I-th variable at one of its bounds
 ! initially, with NACT being set to the number of fixed variables.
 xbdi = 0
-xbdi(trueloc(xopt >= su .and. gopt <= 0)) = 1
-xbdi(trueloc(xopt <= sl .and. gopt >= 0)) = -1
+!xbdi(trueloc(xopt >= su .and. gopt <= 0)) = 1
+!xbdi(trueloc(xopt <= sl .and. gopt >= 0)) = -1
 nact = int(count(xbdi /= 0), kind(nact))
 
 ! Initialized D and CRVMIN.
@@ -237,9 +237,9 @@ do iter = 1, maxiter
     else
         s = beta * s - gnew
     end if
-    s(trueloc(xbdi /= 0)) = ZERO
+    !s(trueloc(xbdi /= 0)) = ZERO
     stepsq = sum(s**2)
-    ds = inprod(d(trueloc(xbdi == 0)), s(trueloc(xbdi == 0)))
+    !ds = inprod(d(trueloc(xbdi == 0)), s(trueloc(xbdi == 0)))
 
     if (.not. (stepsq > EPS * delsq .and. gredsq * delsq > (tol * qred)**2 .and. .not. is_nan(ds))) then
         exit
@@ -270,7 +270,7 @@ do iter = 1, maxiter
     end if
 
     hs = hess_mul(s, xpt, pq, hq)
-    shs = inprod(s(trueloc(xbdi == 0)), hs(trueloc(xbdi == 0)))
+    !shs = inprod(s(trueloc(xbdi == 0)), hs(trueloc(xbdi == 0)))
     stplen = bstep
     if (shs > 0) then
         stplen = min(bstep, gredsq / shs)
@@ -316,7 +316,7 @@ do iter = 1, maxiter
     !where (s > 0) sbound = min(stplen * s, su - xnew) / s
     !where (s < 0) sbound = max(stplen * s, sl - xnew) / s
     !----------------------------------------------------------------------------------------------!
-    sbound(trueloc(is_nan(sbound))) = stplen  ! Needed? No if we are sure that D and S are finite.
+    !sbound(trueloc(is_nan(sbound))) = stplen  ! Needed? No if we are sure that D and S are finite.
     iact = 0
     if (any(sbound < stplen)) then
         iact = int(minloc(sbound, dim=1), kind(iact))
@@ -426,8 +426,8 @@ do iter = 1, maxiter
     xnew = xopt + d
 
     ! Update XBDI. It indicates whether the lower (-1) or upper bound (+1) is reached or not (0).
-    xbdi(trueloc(xbdi == 0 .and. (xnew >= su))) = 1
-    xbdi(trueloc(xbdi == 0 .and. (xnew <= sl))) = -1
+  !  xbdi(trueloc(xbdi == 0 .and. (xnew >= su))) = 1
+    !xbdi(trueloc(xbdi == 0 .and. (xnew <= sl))) = -1
     nact = int(count(xbdi /= 0), kind(nact))
     if (nact >= n - 1) then
         exit
@@ -439,7 +439,7 @@ do iter = 1, maxiter
     if (iter == 1 .or. nact > nactsav) then
         !dredsq = sum(d(trueloc(xbdi == 0))**2) ! In theory, DREDSQ changes only when NACT increases.
         dred = d
-        dred(trueloc(xbdi /= 0)) = ZERO
+        !dred(trueloc(xbdi /= 0)) = ZERO
         hdred = hess_mul(dred, xpt, pq, hq)
         nactsav = nact
     end if
@@ -452,7 +452,7 @@ do iter = 1, maxiter
     end if
     temp = sqrt(temp)
     s = (dredg * d - dredsq * gnew) / temp
-    s(trueloc(xbdi /= 0)) = ZERO
+    !s(trueloc(xbdi /= 0)) = ZERO
     sredg = -temp
 
     ! By considering the simple bounds on the free variables, calculate an upper bound on the
@@ -479,7 +479,7 @@ do iter = 1, maxiter
     sqdscr = -REALMAX
     where (xbdi == 0 .and. su - xopt < sqrt(ssq)) sqdscr = sqrt(max(ZERO, ssq - (su - xopt)**2))
     where (sqdscr + s > 0) tanbd = min(tanbd, (su - xnew) / (sqdscr + s))
-    tanbd(trueloc(is_nan(tanbd))) = ZERO
+    !tanbd(trueloc(is_nan(tanbd))) = ZERO
     !----------------------------------------------------------------------------------------------!
     !!MATLAB code for defining TANBD:
     !!xfree = (xbdi == 0);
@@ -509,9 +509,9 @@ do iter = 1, maxiter
 
     ! Calculate HS and some curvatures for the alternative iteration.
     hs = hess_mul(s, xpt, pq, hq)
-    shs = inprod(s(trueloc(xbdi == 0)), hs(trueloc(xbdi == 0)))
-    dhs = inprod(d(trueloc(xbdi == 0)), hs(trueloc(xbdi == 0)))
-    dhd = inprod(d(trueloc(xbdi == 0)), hdred(trueloc(xbdi == 0)))
+    !shs = inprod(s(trueloc(xbdi == 0)), hs(trueloc(xbdi == 0)))
+    !dhs = inprod(d(trueloc(xbdi == 0)), hs(trueloc(xbdi == 0)))
+    !dhd = inprod(d(trueloc(xbdi == 0)), hdred(trueloc(xbdi == 0)))
 
     ! Seek the greatest reduction in Q for a range of equally spaced values of HANGT in [0, ANGBD],
     ! with HANGT being the TANGENT of HALF the angle of the alternative iteration.
@@ -538,7 +538,7 @@ do iter = 1, maxiter
     sth = min((hangt + hangt) / (ONE + hangt**2), hangt + hangt)
     gnew = gnew + (cth - ONE) * hdred + sth * hs
     dold = d
-    d(trueloc(xbdi == 0)) = cth * d(trueloc(xbdi == 0)) + sth * s(trueloc(xbdi == 0))
+    !d(trueloc(xbdi == 0)) = cth * d(trueloc(xbdi == 0)) + sth * s(trueloc(xbdi == 0))
 
     ! Exit in case of Inf/NaN in D.
     if (.not. is_finite(sum(abs(d)))) then
@@ -558,8 +558,8 @@ end do
 
 ! Set D, giving careful attention to the bounds.
 xnew = max(sl, min(su, xopt + d))
-xnew(trueloc(xbdi == -1)) = sl(trueloc(xbdi == -1))
-xnew(trueloc(xbdi == 1)) = su(trueloc(xbdi == 1))
+!xnew(trueloc(xbdi == -1)) = sl(trueloc(xbdi == -1))
+!xnew(trueloc(xbdi == 1)) = su(trueloc(xbdi == 1))
 d = xnew - xopt
 
 ! Set CRVMIN to ZERO if it has never been set or becomes NaN due to ill conditioning.

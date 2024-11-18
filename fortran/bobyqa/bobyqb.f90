@@ -730,6 +730,8 @@ real(RP) :: ebound
 character(len=*), parameter :: srname = 'ERRBD'
 integer(IK) :: n
 integer(IK) :: npt
+integer(IK) :: i
+integer(IK) :: temp(size(d))
 real(RP) :: bfirst(size(d))
 real(RP) :: bsecond(size(d))
 real(RP) :: gnew(size(d))
@@ -763,8 +765,14 @@ end if
 xnew = xopt + d
 gnew = gopt + hess_mul(d, xpt, pq, hq)
 !bfirst = maxval(abs(moderr_rec))
-bfirst(trueloc(xnew <= sl)) = gnew(trueloc(xnew <= sl)) * rho
-bfirst(trueloc(xnew >= su)) = -gnew(trueloc(xnew >= su)) * rho
+temp = trueloc(xnew <= sl)
+do i = 1, size(temp)
+    bfirst(temp(i)) = gnew(temp(i)) * rho
+end do
+temp = trueloc(xnew <= su)
+do i = 1, size(temp)
+    bfirst(temp(i)) = -gnew(temp(i)) * rho
+end do
 bsecond = HALF * (diag(hq) + matprod(xpt**2, pq)) * rho**2
 ebound = minval(max(bfirst, bfirst + bsecond))
 if (crvmin > 0) then

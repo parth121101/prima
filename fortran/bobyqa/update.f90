@@ -455,8 +455,8 @@ end if
 
 ! Calculate the norm square of the projected gradient.
 pgopt = gopt
-pgopt(trueloc(xopt >= su)) = max(ZERO, gopt(trueloc(xopt >= su)))
-pgopt(trueloc(xopt <= sl)) = min(ZERO, gopt(trueloc(xopt <= sl)))
+!pgopt(trueloc(xopt >= su)) = max(ZERO, gopt(trueloc(xopt >= su)))
+!pgopt(trueloc(xopt <= sl)) = min(ZERO, gopt(trueloc(xopt <= sl)))
 
 ! Calculate the parameters of the least Frobenius norm interpolant to the current data.
 pqalt = matprod(zmat, matprod(fval, zmat))
@@ -464,8 +464,8 @@ galt = matprod(bmat(:, 1:npt), fval) + hess_mul(xopt, xpt, pqalt)
 
 ! Calculate the norm square of the projected alternative gradient.
 pgalt = galt
-pgalt(trueloc(xopt >= su)) = max(ZERO, galt(trueloc(xopt >= su)))
-pgalt(trueloc(xopt <= sl)) = min(ZERO, galt(trueloc(xopt <= sl)))
+!pgalt(trueloc(xopt >= su)) = max(ZERO, galt(trueloc(xopt >= su)))
+!pgalt(trueloc(xopt <= sl)) = min(ZERO, galt(trueloc(xopt <= sl)))
 
 ! Test whether to replace the new quadratic model by the least Frobenius norm interpolant,
 ! making the replacement if the test is satisfied.

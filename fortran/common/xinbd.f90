@@ -39,7 +39,9 @@ real(RP) :: x(size(xbase))
 ! Local variables
 character(len=*), parameter :: srname = 'XINBD'
 integer(IK) :: n
+integer(IK) :: i
 real(RP) :: s(size(xbase))
+integer :: s_(size(xbase))
 
 ! Sizes
 n = int(size(xbase), kind(n))
@@ -60,8 +62,14 @@ end if
 
 s = max(sl, min(su, step))
 x = max(xl, min(xu, xbase + s))
-x(trueloc(s <= sl)) = xl(trueloc(s <= sl))
-x(trueloc(s >= su)) = xu(trueloc(s >= su))
+s_ = trueloc(s <= sl)
+do i = 1,size(s_)
+   x(s_(i)) = xl(s_(i))
+end do
+s_ = trueloc(s >= su)
+do i = 1,size(s_)
+   x(s_(i)) = xu(s_(i))
+end do
 
 !====================!
 !  Calculation ends  !

@@ -250,6 +250,8 @@ integer(IK) :: k
 integer(IK) :: maxfun_loc
 integer(IK) :: maxhist_loc
 integer(IK) :: n
+integer(IK) :: i
+integer(IK) :: temp(size(x))
 integer(IK) :: nf_loc
 integer(IK) :: nhist
 integer(IK) :: npt_loc
@@ -290,7 +292,11 @@ if (present(xl)) then
         xl_loc = xl
     end if
 end if
-xl_loc(trueloc(is_nan(xl_loc) .or. xl_loc < -BOUNDMAX)) = -BOUNDMAX
+
+temp = trueloc(is_nan(xl_loc) .or. xl_loc > BOUNDMAX)
+do i = 1,size(temp)
+    xl_loc(temp(i)) = BOUNDMAX
+end do
 
 xu_loc = BOUNDMAX
 if (present(xu)) then
@@ -298,8 +304,10 @@ if (present(xu)) then
         xu_loc = xu
     end if
 end if
-xu_loc(trueloc(is_nan(xu_loc) .or. xu_loc > BOUNDMAX)) = BOUNDMAX
-
+temp = trueloc(is_nan(xu_loc) .or. xu_loc > BOUNDMAX)
+do i = 1,size(temp)
+    xu_loc(temp(i)) = BOUNDMAX
+end do
 ! The solver requires that MINVAL(XU-XL) >= 2*RHOBEG, and we return if MINVAL(XU-XL) < 2*EPS.
 ! It would be better to fix the variables at (XU+XL)/2 wherever XU and XL almost equal, as is done
 ! in the MATLAB/Python interface of the solvers. In Fortran, this is doable using internal functions,

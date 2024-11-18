@@ -37,9 +37,15 @@ implicit none
 real(RP), intent(in) :: x(:)
 ! Outputs
 real(RP) :: y(size(x))
-
+integer :: y_(size(x))
+integer :: i
+ 
 y = x
-y(trueloc(is_nan(x))) = ZERO
+y_ = trueloc(is_nan(x))
+do i = 1, size(y_)
+   y(y_(i)) = ZERO
+end do
+
 y = max(-REALMAX, min(REALMAX, y))
 end function moderatex
 
@@ -83,9 +89,14 @@ implicit none
 real(RP), intent(in) :: c(:)
 ! Outputs
 real(RP) :: y(size(c))
+integer :: y_(size(c))
+integer :: i
 
 y = c
-y(trueloc(is_nan(c))) = CONSTRMAX
+y_ = trueloc(is_nan(c))
+do i = 1, size(y_)
+   y(y_(i)) = CONSTRMAX
+end do
 y = max(-CONSTRMAX, min(CONSTRMAX, y))
 end function moderatec
 
