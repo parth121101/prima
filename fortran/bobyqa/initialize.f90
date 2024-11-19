@@ -477,8 +477,10 @@ real(RP), intent(out) :: zmat(:, :) ! ZMAT(NPT, NPT - N - 1)
 character(len=*), parameter :: srname = 'INITH'
 integer(IK) :: k
 integer(IK) :: n
+integer(IK) :: j
 integer(IK) :: ndiag
 integer(IK) :: npt
+integer(IK) :: ij_(size(ij,1))
 real(RP) :: rhobeg
 real(RP) :: rhosq
 real(RP) :: xa(min(size(xpt, 1), size(xpt, 2) - size(xpt, 1) - 1))
@@ -539,7 +541,10 @@ end do
 do k = ndiag + 1_IK, npt - n - 1_IK
     zmat(1, k) = ONE / rhosq
     zmat(k + n + 1, k) = ONE / rhosq
-    zmat(ij(:, k - n) + 1, k) = -ONE / rhosq
+    ij_ = ij(:, k - n) + 1
+    do j = 1,size(ij_)
+       zmat(j, k) = -ONE / rhosq
+    end do
 end do
 
 if (present(info)) then
