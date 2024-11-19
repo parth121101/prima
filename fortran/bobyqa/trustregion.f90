@@ -474,11 +474,11 @@ do iter = 1, maxiter
     ssq = d**2 + s**2  ! Indeed, only SSQ(TRUELOC(XBDI == 0)) is needed.
     tanbd = ONE
     sqdscr = -REALMAX
-    where (xbdi == 0 .and. xopt - sl < sqrt(ssq)) sqdscr = sqrt(max(ZERO, ssq - (xopt - sl)**2))
-    where (sqdscr - s > 0) tanbd = min(tanbd, (xnew - sl) / (sqdscr - s))
+    !where (xbdi == 0 .and. xopt - sl < sqrt(ssq)) sqdscr = sqrt(max(ZERO, ssq - (xopt - sl)**2))
+    !where (sqdscr - s > 0) tanbd = min(tanbd, (xnew - sl) / (sqdscr - s))
     sqdscr = -REALMAX
-    where (xbdi == 0 .and. su - xopt < sqrt(ssq)) sqdscr = sqrt(max(ZERO, ssq - (su - xopt)**2))
-    where (sqdscr + s > 0) tanbd = min(tanbd, (su - xnew) / (sqdscr + s))
+    !where (xbdi == 0 .and. su - xopt < sqrt(ssq)) sqdscr = sqrt(max(ZERO, ssq - (su - xopt)**2))
+    !where (sqdscr + s > 0) tanbd = min(tanbd, (su - xnew) / (sqdscr + s))
     !tanbd(trueloc(is_nan(tanbd))) = ZERO
     !----------------------------------------------------------------------------------------------!
     !!MATLAB code for defining TANBD:
