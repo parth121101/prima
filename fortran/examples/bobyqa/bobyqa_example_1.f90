@@ -59,7 +59,7 @@ end module calfun_mod
 !---------------------------------------- THE MAIN PROGRAM ----------------------------------------!
 program bobyqa_exmp
 
- The following line makes the solver available.
+!  The following line makes the solver available.
  use bobyqa_mod, only : bobyqa
  ! The following line specifies which module provides CALFUN and CALLBACK_FCN.
  use calfun_mod, only : RP, IK, calfun, callback_fcn
